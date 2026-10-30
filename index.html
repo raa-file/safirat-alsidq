@@ -91,6 +91,27 @@ h3{font-size:1.05rem;font-weight:700;color:var(--maroon)}
 
 .view{display:none}.view.on{display:block;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.whochip{position:absolute;top:14px;left:16px;z-index:5;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(217,188,132,.5);border-radius:999px;padding:4px 6px 4px 12px;color:#FFF6E6;font-size:.88rem;font-weight:600}
+.whochip .ic{width:18px;height:18px}
+.whochip button{border:0;background:var(--gold-2);color:var(--maroon-d);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.82rem}
+body.gate .hero{padding-bottom:70px}
+.tabs2{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:5px;margin-top:16px}
+.tabs2 button{border:0;background:none;border-radius:10px;padding:9px;font-weight:700;color:var(--ink-soft)}
+.tabs2 button.on{background:var(--maroon);color:#fff}
+.sgrid{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px}
+.sgrid span{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 10px 2px 6px;font-size:.82rem;color:var(--ink-soft);background:var(--paper)}
+.sgrid span .ic{width:18px;height:18px;opacity:.55}
+.sgrid span.on{border-color:var(--ok);color:var(--ok);background:#EFF7F2}
+.sgrid span.on .ic{opacity:1}
+.sdet{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:12px}
+.sdet>div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sdet h3{font-size:.95rem;margin-bottom:4px}
+.mini{list-style:none;font-size:.86rem}
+.mini li{padding:3px 0;color:var(--ink-soft);display:flex;gap:6px;align-items:center}
+.mini li::before{content:"";width:12px;height:12px;border-radius:3px;border:1.5px solid var(--line);flex-shrink:0}
+.mini li.on{color:var(--ink)}
+.mini li.on::before{background:var(--ok);border-color:var(--ok)}
+@media (max-width:520px){.whochip{top:10px;left:10px;font-size:.8rem}}
 @media (prefers-reduced-motion:reduce){.view.on{animation:none}*{transition:none!important}}
 
 /* ===== رحلة الشهادة ===== */
@@ -327,6 +348,7 @@ textarea{min-height:120px;resize:vertical}
 </svg>
 
 <header class="hero">
+  <div class="whochip" id="whoChip" style="display:none"></div>
   <div class="wrap">
     <h1>سفيرات الصدق</h1>
     <p>الصدق خُلُق نتمسّك به كل يوم، وأثرٌ طيب نتركه في كل قلب.</p>
@@ -353,7 +375,11 @@ textarea{min-height:120px;resize:vertical}
   </nav>
 
   <!-- ===== الرئيسية ===== -->
-  <section class="view on" id="v-home">
+  <section class="view" id="v-auth">
+    <div class="panel" id="authBox" style="max-width:560px;margin-inline:auto;margin-top:-40px;position:relative;z-index:3"></div>
+  </section>
+
+  <section class="view" id="v-home">
     <div class="panel">
       <div class="sec-title"><svg class="ic"><use href="#i-medal"/></svg><div><h2>رحلتك نحو شهادة سفيرة الصدق</h2><p class="sub">خمس محطات، وفي آخرها شهادتك.</p></div></div>
       <div class="journey" id="journey"></div>
@@ -377,10 +403,6 @@ textarea{min-height:120px;resize:vertical}
       <p class="sub">اكتبي موقفًا صادقًا عشتِه، وسيظهر على حائط الصدق بعد اعتماد المعلمة.</p>
       <div class="row" style="margin-top:14px"><button class="btn" id="openFormBtn" onclick="openForm()"><svg class="ic"><use href="#i-pen"/></svg>اكتبي موقفك</button></div>
       <div id="formBox" style="display:none">
-        <div class="grid2">
-          <div><label for="fName">اسمك</label><input id="fName" maxlength="40" autocomplete="off"></div>
-          <div><label for="fClass">الصف</label><input id="fClass" maxlength="20" placeholder="مثال: ٢/١"></div>
-        </div>
         <label for="fText">الموقف</label>
         <textarea id="fText" maxlength="500" placeholder="ماذا حدث؟ وكيف كان الصدق اختيارك؟"></textarea>
         <p class="hint"><span id="cnt">٠</span> / ٥٠٠ حرف</p>
@@ -389,6 +411,12 @@ textarea{min-height:120px;resize:vertical}
           <button class="btn alt" onclick="closeForm()">إلغاء</button>
         </div>
       </div>
+    </div>
+
+    <div class="panel">
+      <h2>مشاركاتي</h2>
+      <p class="sub">كل ما أرسلتِه، وحالته عند المعلمة.</p>
+      <div id="mine" style="margin-top:6px"></div>
     </div>
 
     <div class="panel">
@@ -553,12 +581,13 @@ textarea{min-height:120px;resize:vertical}
       <div class="panel"><h2>لوحة المعلمة</h2><p class="sub" id="whoAmI"></p><div class="tk" id="tkpis"></div></div>
       <div class="panel">
         <h2>الطالبات</h2>
-        <p class="sub">كل طالبة شاركت بموقف أو تحدٍّ أو حصلت على شهادة، ومشاركاتها.</p>
+        <p class="sub">كل طالبة مسجّلة: محطاتها، واستبانتها، وتحدياتها، ومشاركاتها. اضغطي على الاسم لترَي التفاصيل.</p>
         <div class="row" style="margin-top:10px">
           <input id="stSearch" placeholder="ابحثي بالاسم" oninput="renderStudents()" style="flex:2;min-width:150px">
           <select id="stClass" onchange="renderStudents()" style="flex:1;min-width:120px"><option value="">كل الفصول</option></select>
         </div>
         <div id="students" style="margin-top:10px"></div>
+        <div class="row" style="margin-top:12px"><button class="btn alt" type="button" onclick="exportStudents()">تنزيل تقدّم الطالبات</button></div>
       </div>
       <div class="panel"><h2>مشاركات تنتظر الاعتماد</h2><div id="pending"></div></div>
       <div class="panel">
@@ -637,66 +666,103 @@ const ICON512='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiT
   document.getElementById('manifest').href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));}catch(_){}})();
 
 const sb=(SUPABASE_URL&&SUPABASE_ANON_KEY&&window.supabase)?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
-let DB={stories:[],challenge:{text:'',open:false},classes:'',surveys:[],certs:[],stats:{ambassadors:0,approved:0,classes:0,certs:0}};
+let DB={stories:[],challenge:{text:'',open:false},classes:'',stats:{ambassadors:0,approved:0,classes:0,certs:0},surveys:[],certs:[],students:[]};
 let isTeacher=false;
+let ME=null;      // الطالبة المسجّلة: {token,id,name,cls,progress}
+let MINE=[];      // مشاركاتها
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const date=t=>new Date(t).toLocaleDateString('ar-SA',{day:'numeric',month:'long'});
 const icon=(id,st='')=>`<svg class="ic" ${st?`style="${st}"`:''}><use href="#i-${id}"/></svg>`;
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
-const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2800)}
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
+const ms=t=>new Date(t).getTime();
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const norm=t=>String(t||'').trim().replace(/\s+/g,' ').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+const ERR={bad_name:'اكتبي اسمك الثلاثي',bad_class:'اختاري فصلك',bad_pin:'الرمز السري ٤ أرقام',exists:'هذا الاسم مسجّل في هذا الفصل. ادخلي من «لدي حساب»، أو أضيفي اسم الجد',
+  bad_login:'الاسم أو الفصل أو الرمز غير صحيح',locked:'محاولات كثيرة خاطئة. حاولي بعد ربع ساعة، أو اطلبي من معلمتك إعادة الرمز',bad_token:'انتهت جلستك، ادخلي مرة أخرى',
+  bad_text:'اكتبي نصًا أطول قليلًا',forbidden:'هذه العملية للمعلمة فقط'};
+function fail(e){console.error(e);toast(ERR[e&&e.code]||'تعذّر الاتصال، تأكدي من الإنترنت وحاولي مجددًا');throw e}
+const err=c=>{const e=new Error(c);e.code=c;return e};
 
-/* ===== تقدّم الطالبة (في جهازها) ===== */
-const JKEY='sidq-journey';
-function J(){return Object.assign({learn:false,pre:null,post:null,h24:false,spread:false,story:false,cert:null},LS.get(JKEY,{}))}
-function setJ(p){const j=Object.assign(J(),p);LS.set(JKEY,j);renderJourney();return j}
+/* ===== تقدّم الطالبة (يُحفظ في حسابها) ===== */
+const DAY=864e5;
+const P0=()=>({learn:false,pre:null,post:null,h24s:null,sp:[false,false,false],mo:[false,false,false,false],story:false,cert:null});
+const PR=()=>Object.assign(P0(),ME?ME.progress:{});
+function J(){const p=PR();return {learn:!!p.learn,pre:p.pre,post:p.post,h24:!!(p.h24s&&(p.h24s.done||Date.now()>p.h24s.start+DAY)),spread:p.sp.some(Boolean)||p.mo.some(Boolean),story:!!p.story,cert:p.cert}}
+let saveT=null;
+function setP(patch){if(!ME)return;ME.progress=Object.assign(PR(),patch);renderJourney();clearTimeout(saveT);saveT=setTimeout(saveP,500)}
+async function saveP(){clearTimeout(saveT);saveT=null;if(!ME)return;try{await API.saveProgress(ME.token,ME.progress)}catch(e){if(e.code==='bad_token')forceLogout()}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveT)saveP()});
 const STEPS=[
   {k:'learn',t:'اكتشفي معنى الصدق',ic:'compass',v:'learn'},
   {k:'pre',t:'أجيبي الاستبانة',ic:'survey',v:'survey'},
   {k:'h24',t:'تحدي ٢٤ ساعة',ic:'clock',v:'ch'},
   {k:'spread',t:'انشري الصدق',ic:'send',v:'ch'},
-  {k:'story',t:'شاركي موقفًا',ic:'pen',v:'home',f:()=>openForm()}
+  {k:'story',t:'شاركي موقفًا',ic:'pen',v:'home',f:1}
 ];
+const stepsOf=p=>{const h=p.h24s;return {learn:!!p.learn,pre:!!p.pre,h24:!!(h&&(h.done||Date.now()>h.start+DAY)),spread:(p.sp||[]).some(Boolean)||(p.mo||[]).some(Boolean),story:!!p.story}};
 const stepsDone=j=>STEPS.filter(s=>!!j[s.k]).length;
 
-/* ===== البيانات (Supabase أو تجربة محلية) ===== */
+/* ===== البيانات ===== */
 const LKEY='sidq-local-db';
-const Lget=()=>Object.assign({stories:[],challenge:{text:'',open:false},classes:'',surveys:[],certs:[]},LS.get(LKEY,{}));
+const Lget=()=>Object.assign({stories:[],challenge:{text:'',open:false},classes:'',surveys:[],certs:[],students:[]},LS.get(LKEY,{}));
 const Lset=d=>LS.set(LKEY,d);
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const ms=t=>new Date(t).getTime();
-const keyOf=(n,c)=>String(n||'').trim().toLowerCase()+'|'+String(c||'').trim();
-function fail(e){console.error(e);toast('تعذّر الاتصال، تأكدي من الإنترنت وحاولي مجددًا');throw e}
+const sj=s=>({token:s.token,id:s.id,name:s.name,cls:s.cls,progress:s.progress||{}});
 function localStats(d){const ok=d.stories.filter(s=>s.status==='ok');
-  const cls=new Set([...ok.map(s=>(s.cls||'').trim()).filter(Boolean),...d.surveys.map(s=>s.cls)]);
-  return {ambassadors:new Set(ok.map(s=>keyOf(s.name,s.cls))).size,approved:ok.length,classes:cls.size,certs:d.certs.length}}
+  return {ambassadors:new Set(ok.map(s=>s.student_id||norm(s.name)+'|'+s.cls)).size,approved:ok.length,classes:new Set(d.students.map(s=>s.cls)).size,certs:d.certs.length}}
+async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)fail(error);if(data&&data.error)throw err(data.error);return data}
 
 const API={
   async load(){
     if(!sb){const d=Lget();return {stories:isTeacher?d.stories:d.stories.filter(s=>s.status==='ok'),challenge:d.challenge,classes:d.classes,stats:localStats(d)}}
     const [st,se,ss]=await Promise.all([
-      sb.from('sidq_stories').select('id,name,cls,text,type,status,created_at').order('created_at',{ascending:false}).limit(1000),
+      sb.from('sidq_stories').select('id,name,cls,text,type,status,created_at,student_id').order('created_at',{ascending:false}).limit(2000),
       sb.from('sidq_settings').select('challenge_text,challenge_open,classes').eq('id',1).maybeSingle(),
       sb.rpc('sidq_public_stats')]);
     if(st.error)fail(st.error);if(se.error)fail(se.error);
     const c=se.data||{};
-    return {stories:(st.data||[]).map(r=>({id:r.id,name:r.name,cls:r.cls||'',text:r.text,type:r.type||'',status:r.status,at:ms(r.created_at)})),
+    return {stories:(st.data||[]).map(r=>({id:r.id,name:r.name,cls:r.cls||'',text:r.text,type:r.type||'',status:r.status,student_id:r.student_id,at:ms(r.created_at)})),
       challenge:{text:c.challenge_text||'',open:!!c.challenge_open},classes:c.classes||'',stats:ss.error?null:ss.data};
   },
-  async addStory(o){
-    if(!sb){const d=Lget();d.stories.push({id:uid(),...o,status:'pending',at:Date.now()});Lset(d);return}
-    const {error}=await sb.from('sidq_stories').insert({name:o.name,cls:o.cls||null,text:o.text,type:o.type||null});if(error)fail(error);
+  async register(name,cls,pin){
+    if(!sb){const d=Lget();const k=norm(name);
+      if(k.length<3)throw err('bad_name');if(!cls)throw err('bad_class');if(!/^\d{4}$/.test(pin))throw err('bad_pin');
+      if(d.students.some(s=>s.key===k&&s.cls===cls))throw err('exists');
+      const s={id:uid(),token:uid(),name:name.trim().replace(/\s+/g,' '),cls,key:k,pin,progress:{},created:Date.now(),last:Date.now()};d.students.push(s);Lset(d);return sj(s)}
+    return rpc('sidq_register',{p_name:name,p_cls:cls,p_pin:pin});
   },
-  async addSurvey(cls,ans,phase){
-    if(!sb){const d=Lget();d.surveys.push({cls,ans,phase,at:Date.now()});Lset(d);return}
-    const {error}=await sb.from('sidq_surveys').insert({cls,ans,phase});if(error)fail(error);
+  async login(name,cls,pin){
+    if(!sb){const s=Lget().students.find(s=>s.key===norm(name)&&s.cls===cls&&s.pin===pin);if(!s)throw err('bad_login');return sj(s)}
+    return rpc('sidq_login',{p_name:name,p_cls:cls,p_pin:pin});
   },
-  async addCert(name,cls){
-    if(!sb){const d=Lget();d.certs.push({id:uid(),name,cls,at:Date.now()});Lset(d);return}
-    const {error}=await sb.from('sidq_certs').insert({name,cls:cls||null});if(error)fail(error);
+  async me(token){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);if(!s)throw err('bad_token');s.last=Date.now();Lset(d);return sj(s)}
+    return rpc('sidq_me',{p_token:token});
   },
+  async saveProgress(token,p){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);if(!s)throw err('bad_token');s.progress=p;s.last=Date.now();Lset(d);return}
+    await rpc('sidq_save_progress',{p_token:token,p_progress:p});
+  },
+  async addStory(token,text,type){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);if(!s)throw err('bad_token');d.stories.push({id:uid(),name:s.name,cls:s.cls,text,type:type||'',status:'pending',student_id:s.id,at:Date.now()});Lset(d);return}
+    await rpc('sidq_add_story',{p_token:token,p_text:text,p_type:type||null});
+  },
+  async myStories(token){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);if(!s)return [];return d.stories.filter(x=>x.student_id===s.id).sort((a,b)=>b.at-a.at)}
+    const r=await rpc('sidq_my_stories',{p_token:token});return (r||[]).map(x=>({...x,type:x.type||'',at:ms(x.created_at)}));
+  },
+  async addSurvey(token,ans,phase){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);d.surveys=d.surveys.filter(x=>!(x.student_id===s.id&&x.phase===phase));d.surveys.push({cls:s.cls,ans,phase,student_id:s.id,at:Date.now()});Lset(d);return}
+    await rpc('sidq_add_survey',{p_token:token,p_ans:ans,p_phase:phase});
+  },
+  async issueCert(token,name){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.token===token);d.certs=d.certs.filter(c=>c.student_id!==s.id);d.certs.push({id:uid(),name,cls:s.cls,student_id:s.id,at:Date.now()});Lset(d);return}
+    await rpc('sidq_issue_cert',{p_token:token,p_name:name});
+  },
+  /* المعلمة */
   async setStatus(id,status){
     if(!sb){const d=Lget();const x=d.stories.find(s=>s.id===id);if(x)x.status=status;Lset(d);return}
     const {error}=await sb.from('sidq_stories').update({status}).eq('id',id);if(error)fail(error);
@@ -709,17 +775,29 @@ const API={
     if(!sb){const d=Lget();d.certs=d.certs.filter(s=>s.id!==id);Lset(d);return}
     const {error}=await sb.from('sidq_certs').delete().eq('id',id);if(error)fail(error);
   },
+  async delStudent(id){
+    if(!sb){const d=Lget();d.students=d.students.filter(s=>s.id!==id);['stories','surveys','certs'].forEach(k=>d[k]=d[k].filter(x=>x.student_id!==id));Lset(d);return}
+    const {error}=await sb.from('sidq_students').delete().eq('id',id);if(error)fail(error);
+  },
+  async resetPin(id,pin){
+    if(!sb){const d=Lget(),s=d.students.find(s=>s.id===id);if(s)s.pin=pin;Lset(d);return}
+    await rpc('sidq_teacher_reset_pin',{p_student:id,p_pin:pin});
+  },
   async saveSettings(p){
     if(!sb){const d=Lget();Object.assign(d,p);Lset(d);return}
     const row={id:1};if('challenge' in p){row.challenge_text=p.challenge.text;row.challenge_open=p.challenge.open}if('classes' in p)row.classes=p.classes;
     const {error}=await sb.from('sidq_settings').upsert(row);if(error)fail(error);
   },
   async teacherData(){
-    if(!sb){const d=Lget();return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs}}
-    const out=[];for(let f=0;;f+=1000){const {data,error}=await sb.from('sidq_surveys').select('cls,ans,phase,created_at').order('created_at').range(f,f+999);
-      if(error)fail(error);out.push(...data.map(r=>({cls:r.cls,ans:r.ans,phase:r.phase||'pre',at:ms(r.created_at)})));if(data.length<1000)break}
-    const c=await sb.from('sidq_certs').select('id,name,cls,created_at').order('created_at',{ascending:false});if(c.error)fail(c.error);
-    return {surveys:out,certs:c.data.map(r=>({id:r.id,name:r.name,cls:r.cls||'',at:ms(r.created_at)}))};
+    if(!sb){const d=Lget();return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs,students:d.students.map(s=>({id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},created:s.created,last:s.last}))}}
+    const page=async(q)=>{const out=[];for(let f=0;;f+=1000){const {data,error}=await q().range(f,f+999);if(error)fail(error);out.push(...data);if(data.length<1000)break}return out};
+    const [sv,ce,stu]=await Promise.all([
+      page(()=>sb.from('sidq_surveys').select('cls,ans,phase,student_id,created_at').order('created_at')),
+      page(()=>sb.from('sidq_certs').select('id,name,cls,student_id,created_at').order('created_at',{ascending:false})),
+      page(()=>sb.from('sidq_students').select('id,name,cls,progress,created_at,last_seen').order('created_at'))]);
+    return {surveys:sv.map(r=>({cls:r.cls,ans:r.ans,phase:r.phase||'pre',student_id:r.student_id,at:ms(r.created_at)})),
+      certs:ce.map(r=>({id:r.id,name:r.name,cls:r.cls||'',student_id:r.student_id,at:ms(r.created_at)})),
+      students:stu.map(r=>({id:r.id,name:r.name,cls:r.cls,progress:r.progress||{},created:ms(r.created_at),last:ms(r.last_seen)}))};
   },
   async clearSurveys(){
     if(!sb){const d=Lget();d.surveys=[];Lset(d);return}
@@ -742,21 +820,67 @@ const API={
 async function refreshAll(){
   const d=await API.load();
   DB.stories=d.stories;DB.challenge=d.challenge;DB.classes=d.classes;
-  DB.stats=d.stats||localStats({stories:d.stories,surveys:[],certs:[]});
-  if(isTeacher){const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs}
+  DB.stats=d.stats||{ambassadors:0,approved:0,classes:0,certs:0};
+  if(isTeacher){const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students}
+  if(ME){try{MINE=await API.myStories(ME.token)}catch(_){}}
   render();
 }
 
 /* ===== التنقل ===== */
+let curView='home';
 function go(v){
+  if(!ME&&!['auth','teacher'].includes(v))v='auth';
+  curView=v;
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   $('v-'+v).classList.add('on');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  const home=v==='home';$('kpis').style.display=home?'':'none';$('cta').style.display=(home||v==='learn')?'':'none';
-  if(v==='teacher'){$('tLogin').style.display=isTeacher?'none':'block';$('tPanel').style.display=isTeacher?'block':'none';$('cta').style.display='none'}
+  const home=v==='home',gate=v==='auth'||v==='teacher';
+  $('kpis').style.display=home?'':'none';$('cta').style.display=(home||v==='learn')?'':'none';$('nav').style.display=gate?'none':'';
+  document.body.classList.toggle('gate',gate);
+  if(v==='teacher'){$('tLogin').style.display=isTeacher?'none':'block';$('tPanel').style.display=isTeacher?'block':'none'}
   if(v==='survey')renderSurvey();
   if(v==='cert')renderCert();
-  const fixedNav=getComputedStyle($('nav')).position==='fixed';window.scrollTo({top:(home||fixedNav)?0:Math.max(0,$('nav').offsetTop-12),behavior:'smooth'});
+  renderWho();
+  const fixedNav=getComputedStyle($('nav')).position==='fixed';
+  window.scrollTo({top:(home||gate||fixedNav)?0:Math.max(0,$('nav').offsetTop-12),behavior:'smooth'});
+}
+
+/* ===== دخول الطالبة ===== */
+let authTab='login';
+function renderAuth(){
+  const o=classes().map(c=>`<option>${esc(c)}</option>`).join('');
+  const reg=authTab==='reg';
+  $('authBox').innerHTML=`
+   <div class="sec-title">${icon('crown')}<div><h2>${reg?'تسجيل طالبة جديدة':'دخول الطالبة'}</h2><p class="sub">${reg?'سجّلي مرة واحدة، ويُحفظ تقدّمك في حسابك من أي جهاز.':'ادخلي باسمك وفصلك ورمزك السري.'}</p></div></div>
+   <div class="tabs2"><button class="${reg?'':'on'}" onclick="authTab='login';renderAuth()">لدي حساب</button><button class="${reg?'on':''}" onclick="authTab='reg';renderAuth()">طالبة جديدة</button></div>
+   <label for="aName">الاسم الثلاثي</label><input id="aName" maxlength="60" autocomplete="name" placeholder="مثال: نورة محمد العتيبي">
+   <label for="aClass">الفصل</label><select id="aClass"><option value="">اختاري فصلك</option>${o}</select>
+   <div class="grid2"><div><label for="aPin">الرمز السري (٤ أرقام)</label><input id="aPin" type="password" inputmode="numeric" maxlength="4" autocomplete="${reg?'new-password':'current-password'}" dir="ltr" style="letter-spacing:.5em;text-align:center"></div>
+   ${reg?`<div><label for="aPin2">أعيدي كتابة الرمز</label><input id="aPin2" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" dir="ltr" style="letter-spacing:.5em;text-align:center"></div>`:'<div></div>'}</div>
+   ${reg?'<p class="hint" style="margin-top:8px">اختاري رمزًا تتذكرينه ولا تخبري به أحدًا. إذا نسيتِه تعيده لك معلمتك.</p>':''}
+   <div class="row" style="margin-top:16px"><button class="btn gold" id="authBtn" onclick="${reg?'doRegister()':'doLogin()'}">${reg?'سجّليني':'دخول'}</button></div>`;
+  ['aName','aPin','aPin2'].forEach(id=>{const e=$(id);if(e)e.addEventListener('keydown',ev=>{if(ev.key==='Enter')(reg?doRegister:doLogin)()})});
+}
+function authVals(){const n=$('aName').value.trim(),c=$('aClass').value,p=$('aPin').value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  if(norm(n).split(' ').length<2||norm(n).length<5){toast('اكتبي اسمك الثلاثي');$('aName').focus();return null}
+  if(!c){toast('اختاري فصلك');$('aClass').focus();return null}
+  if(!/^\d{4}$/.test(p)){toast('الرمز السري ٤ أرقام');$('aPin').focus();return null}
+  return {n,c,p}}
+async function doLogin(){const v=authVals();if(!v)return;$('authBtn').disabled=true;
+  try{startSession(await API.login(v.n,v.c,v.p),'أهلًا بعودتك')}catch(e){toast(ERR[e.code]||'تعذّر الاتصال، حاولي مجددًا')}finally{if($('authBtn'))$('authBtn').disabled=false}}
+async function doRegister(){const v=authVals();if(!v)return;
+  const p2=$('aPin2').value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));if(p2!==v.p){toast('الرمزان غير متطابقين');$('aPin2').focus();return}
+  $('authBtn').disabled=true;
+  try{startSession(await API.register(v.n,v.c,v.p),'أهلًا بك في سفيرات الصدق')}catch(e){toast(ERR[e.code]||'تعذّر الاتصال، حاولي مجددًا')}finally{if($('authBtn'))$('authBtn').disabled=false}}
+function startSession(s,msg){ME=s;ME.progress=ME.progress||{};LS.set('sidq-token',s.token);toast(msg+'، '+s.name.split(' ')[0]);renderH24();renderSpread();renderMore();go('home');refreshAll().catch(()=>{})}
+async function logoutStudent(){if(saveT)await saveP();ME=null;MINE=[];LS.del('sidq-token');authTab='login';renderAuth();go('auth')}
+function forceLogout(){ME=null;LS.del('sidq-token');toast(ERR.bad_token);renderAuth();go('auth')}
+function renderWho(){
+  const w=$('whoChip');
+  if(ME&&curView!=='teacher')w.innerHTML=`<span>${icon('crown')} ${esc(ME.name.split(' ')[0])} · ${esc(ME.cls)}</span><button onclick="logoutStudent()">خروج</button>`;
+  else if(isTeacher&&curView==='teacher')w.innerHTML=`<span>لوحة المعلمة</span>`;
+  else w.innerHTML='';
+  w.style.display=w.innerHTML?'':'none';
 }
 
 /* ===== العرض العام ===== */
@@ -771,7 +895,7 @@ function render(){
   $('latest').innerHTML=ok.length?ok.slice(0,6).map(noteHTML).join(''):empty;
   $('wall').innerHTML=ok.length?ok.map(noteHTML).join(''):empty;
   $('wallCount').textContent=ok.length?`${ar(ok.length)} موقفًا معتمدًا`:'كل المواقف المعتمدة تظهر هنا.';
-  const m={};ok.forEach(s=>{const k=keyOf(s.name,s.cls);(m[k]=m[k]||{name:s.name.trim(),cls:(s.cls||'').trim(),n:0}).n++});
+  const m={};ok.forEach(s=>{const k=s.student_id||norm(s.name)+'|'+s.cls;(m[k]=m[k]||{name:s.name.trim(),cls:(s.cls||'').trim(),n:0}).n++});
   const list=Object.values(m).sort((a,b)=>b.n-a.n);
   $('ambList').innerHTML=list.length?list.map(a=>`<div class="amb"><div class="av">${esc(a.name[0]||'؟')}</div>
     <div><div style="font-weight:700">${esc(a.name)}</div><div class="hint">${esc(a.cls)}</div></div>
@@ -781,16 +905,21 @@ function render(){
   $('chBox').style.display=c.open&&c.text?'block':'none';
   $('chBox').innerHTML=c.open&&c.text?`<div class="ch-head">${icon('star')}<div><h2>تحدي الأسبوع من المعلمة</h2><p class="sub">جرّبيه هذا الأسبوع، ثم اكتبي موقفك.</p></div></div><div class="chal">${esc(c.text)}</div>
       <div class="row" style="margin-top:14px"><button class="btn" onclick="go('home');openForm()">اكتبي موقفك</button></div>`:'';
+  $('mine').innerHTML=MINE.length?MINE.map(s=>`<div class="pend"><span class="tag">${esc(s.type||'موقف')}</span> <span class="${s.status==='ok'?'st-ok':'st-pend'}" style="font-size:.85rem">${s.status==='ok'?'معتمدة':'تنتظر الاعتماد'}</span><p style="white-space:pre-wrap;margin-top:4px">${esc(s.text)}</p><p class="hint">${date(s.at)}</p></div>`).join('')
+    :'<div class="empty">لم ترسلي مشاركات بعد.</div>';
   fillClassSelects();renderJourney();
+  if(curView==='auth')renderAuthClasses();
   if(isTeacher)renderAdmin();
 }
+function renderAuthClasses(){const s=$('aClass');if(!s)return;const v=s.value;s.innerHTML='<option value="">اختاري فصلك</option>'+classes().map(c=>`<option>${esc(c)}</option>`).join('');s.value=v}
 
 function renderJourney(){
+  if(!ME)return;
   const j=J(),n=stepsDone(j);
   $('journey').innerHTML=STEPS.map((s,i)=>`<button class="step ${j[s.k]?'done':''}" onclick="go('${s.v}')${s.f?';openForm()':''}">${icon(j[s.k]?'check':s.ic)}<span>${s.t}</span><small>${j[s.k]?'تمّت':'المحطة '+ar(i+1)}</small></button>`).join('');
   $('jprog').style.width=(n/5*100)+'%';
   let h;
-  if(!j.pre) h=`<div class="txt"><h2>الاستبانة القبلية لقيمة الصدق</h2><p class="sub">دقيقتان فقط، ولا يُطلب اسمك.</p></div><button class="btn gold" onclick="go('survey')">${icon('survey')}ابدئي الاستبانة</button>`;
+  if(!j.pre) h=`<div class="txt"><h2>الاستبانة القبلية لقيمة الصدق</h2><p class="sub">دقيقتان فقط، وإجاباتك تراها معلمتك فقط.</p></div><button class="btn gold" onclick="go('survey')">${icon('survey')}ابدئي الاستبانة</button>`;
   else if(n<5) h=`<div class="txt"><h2>أكملي رحلتك نحو شهادة سفيرة الصدق</h2><p class="sub">أنجزتِ ${ar(n)} من ${ar(5)} محطات.</p></div><button class="btn gold" onclick="go('cert')">${icon('medal')}تابعي رحلتك</button>`;
   else if(!j.post) h=`<div class="txt"><h2>الاستبانة البعدية لقيمة الصدق</h2><p class="sub">أكملتِ رحلتك! أجيبي مرة أخرى لتري ما تغيّر فيك.</p></div><button class="btn gold" onclick="go('survey')">${icon('survey')}ابدئي الاستبانة البعدية</button>`;
   else h=`<div class="txt"><h2>أنتِ سفيرة للصدق</h2><p class="sub">شهادتك جاهزة للطباعة في أي وقت.</p></div><button class="btn gold" onclick="go('cert')">${icon('medal')}شهادتي</button>`;
@@ -798,17 +927,15 @@ function renderJourney(){
 }
 
 /* ===== كتابة موقف ===== */
-function openForm(){$('formBox').style.display='block';setTimeout(()=>{$('formBox').scrollIntoView({behavior:'smooth',block:'center'});$('fName').focus()},250)}
+function openForm(){$('formBox').style.display='block';setTimeout(()=>{$('formBox').scrollIntoView({behavior:'smooth',block:'center'});$('fText').focus()},250)}
 function closeForm(){$('formBox').style.display='none'}
 $('fText').addEventListener('input',e=>$('cnt').textContent=ar(e.target.value.length));
 async function submitStory(btn){
-  const name=$('fName').value.trim(),cls=$('fClass').value.trim(),text=$('fText').value.trim();
-  if(!name)return toast('اكتبي اسمك أولًا');
+  const text=$('fText').value.trim();
   if(text.length<15)return toast('اكتبي الموقف في جملة أو أكثر');
-  btn.disabled=true;try{await API.addStory({name,cls,text})}catch(_){btn.disabled=false;return}btn.disabled=false;
-  $('fText').value='';$('cnt').textContent='٠';closeForm();setJ({story:true});
-  LS.set('sidq-me',{n:name,c:cls});
-  toast('وصل موقفك! سيظهر بعد اعتماد المعلمة');if(isTeacher)refreshAll();
+  btn.disabled=true;try{await API.addStory(ME.token,text,'')}catch(e){btn.disabled=false;if(e.code)toast(ERR[e.code]||'تعذّر الإرسال');return}btn.disabled=false;
+  $('fText').value='';$('cnt').textContent='٠';closeForm();setP({story:true});
+  toast('وصل موقفك! سيظهر بعد اعتماد المعلمة');refreshAll().catch(()=>{});
 }
 
 /* ===== اكتشفي ===== */
@@ -829,7 +956,7 @@ function pickSort(i,j,b){
   b.classList.add(ok?'right':'wrong');if(!ok)box.children[SORT[i][1]].classList.add('right');
   $('fb'+i).innerHTML=`<b style="color:${ok?'var(--ok)':'var(--no)'}">${ok?'أحسنتِ.':'ليس تمامًا.'}</b> ${SORT[i][2]}`;
 }
-function finishLearn(){setJ({learn:true});toast('أحسنتِ! أنهيتِ محطة الاكتشاف');go('home')}
+function finishLearn(){setP({learn:true});toast('أحسنتِ! أنهيتِ محطة الاكتشاف');go('home')}
 
 /* ===== الاستبانة ===== */
 const AXES=[
@@ -850,9 +977,8 @@ function renderSurvey(){
   sPhase=!j.pre?'pre':(stepsDone(j)>=5&&!j.post)?'post':null;
   if(sPhase){
     $('sHead').innerHTML=`<div class="sec-title">${icon('survey')}<div><h2>${sPhase==='pre'?'الاستبانة القبلية لقيمة الصدق':'الاستبانة البعدية لقيمة الصدق'}</h2>
-      <p class="sub">اختاري ما يصفك بصدق. الإجابات للتأمل وليست اختبارًا، ولا يُطلب اسمك.</p></div></div>
-      <label for="sClass">فصلك</label><select id="sClass"></select>`;
-    fillClassSelects();$('sDone').innerHTML='';buildSurveyForm();$('sForm').style.display='';
+      <p class="sub">اختاري ما يصفك بصدق. الإجابات للتأمل وليست اختبارًا، ولا تراها إلا معلمتك.</p></div></div>`;
+    $('sDone').innerHTML='';buildSurveyForm();$('sForm').style.display='';
   }else{
     $('sForm').style.display='none';$('sForm').innerHTML='';
     $('sHead').innerHTML=`<div class="sec-title">${icon('survey')}<div><h2>${j.post?'صورتك قبل الرحلة وبعدها':'شكرًا لمشاركتك'}</h2><p class="sub">${j.post?'هذه صورة لتأملك أنتِ، وليست حكمًا عليك.':'تُفتح الاستبانة البعدية بعد إكمال محطات رحلتك الخمس.'}</p></div></div>`;
@@ -872,60 +998,53 @@ function buildSurveyForm(){
 $('sForm').addEventListener('change',e=>{const f=e.target.closest('.q');if(f)f.classList.remove('miss')});
 function fillClassSelects(){
   const o=classes().map(c=>`<option>${esc(c)}</option>`).join('');
-  if($('sClass')){const v=$('sClass').value;$('sClass').innerHTML='<option value="">اختاري فصلك</option>'+o;$('sClass').value=v}
   const v2=$('svFilter').value;$('svFilter').innerHTML='<option value="">كل الفصول</option>'+o;$('svFilter').value=v2;
 }
 async function submitSurvey(e){
   e.preventDefault();
-  const cls=$('sClass').value;
-  if(!cls){toast('اختاري فصلك أولًا');$('sClass').focus();return}
   const ans=[];let first=null;
   QS.forEach((_,k)=>{const c=document.querySelector(`input[name="s${k}"]:checked`);
     if(c)ans.push(+c.value);else{ans.push(0);$('q'+k).classList.add('miss');first=first??k}});
   if(first!==null){toast('بقيت عبارات بدون إجابة');$('q'+first).scrollIntoView({behavior:'smooth',block:'center'});return}
   const btn=e.submitter;if(btn)btn.disabled=true;
-  try{await API.addSurvey(cls,ans,sPhase)}catch(_){if(btn)btn.disabled=false;return}
-  setJ(sPhase==='pre'?{pre:ans}:{post:ans});
+  try{await API.addSurvey(ME.token,ans,sPhase)}catch(er){if(btn)btn.disabled=false;if(er.code)toast(ERR[er.code]||'تعذّر الإرسال');return}
+  setP(sPhase==='pre'?{pre:ans}:{post:ans});await saveP();
   toast('تم إرسال الاستبانة، شكرًا لك');renderSurvey();window.scrollTo({top:getComputedStyle($('nav')).position==='fixed'?0:$('nav').offsetTop-12,behavior:'smooth'});
-  if(isTeacher)refreshAll();
 }
 
-/* ===== تحدي الأسبوع من المعلمة + تحدي ٢٤ ساعة ===== */
-const H24KEY='sidq-24h',DAY=864e5;
+/* ===== تحدي ٢٤ ساعة ===== */
 const H24ITEMS=['عدم اختلاق الأعذار.','نقل الكلام كما قيل دون تحريف.','الاعتراف بالخطأ عند حدوثه.','عدم المبالغة في وصف المواقف.'];
 let h24Timer=null;
 function h24Left(st){const m=Math.max(0,st.start+DAY-Date.now());return {ms:m,txt:`${ar(Math.floor(m/36e5))} ساعة و${ar(Math.floor(m%36e5/6e4))} دقيقة`}}
 function renderH24(){
   clearInterval(h24Timer);
-  const st=LS.get(H24KEY,null),box=$('h24');
+  const st=PR().h24s,box=$('h24');
   const head=`<div class="ch-head">${icon('clock')}<div><h2>تحدي الصدق لمدة ٢٤ ساعة</h2><p class="sub">حاولي خلال يوم كامل الالتزام بالصدق في كلامك وتصرفاتك.</p></div></div>`;
   const list=(on,ch)=>`<ul class="list4">${H24ITEMS.map((t,i)=>`<li><label><input type="checkbox" data-i="${i}" ${ch&&ch[i]?'checked':''} ${on?'':'disabled'}><span>${t}</span></label></li>`).join('')}</ul>`;
-  if(!st){box.innerHTML=head+list(false)+`<p class="hint" style="margin-top:10px">ضعي علامة على كل التزام تحققينه. تبقى إجاباتك في جهازك ولا يراها أحد.</p>
+  if(!st){box.innerHTML=head+list(false)+`<p class="hint" style="margin-top:10px">ضعي علامة على كل التزام تحققينه خلال اليوم.</p>
     <div class="row" style="margin-top:14px"><button class="btn" onclick="startH24()">ابدئي التحدي الآن</button></div>`;return}
   const left=h24Left(st),n=st.checks.filter(Boolean).length;
   if(st.done||left.ms===0){
-    if(!J().h24)setJ({h24:true});
     box.innerHTML=head+list(false,st.checks)+`<div class="done-box">${icon(n===4?'medal':'leaf')}<h2 style="font-size:1.2rem">${n===4?'أتممتِ التحدي كاملًا، أحسنتِ!':'انتهى يوم التحدي'}</h2>
       <p class="sub">${n===4?'يومٌ كامل من الصدق في القول والعمل. استمري عليه.':`حققتِ ${ar(n)} من ${ar(4)}. كل خطوة صادقة تُحسب لك، وغدًا فرصة جديدة.`}</p></div>
       <div class="row" style="margin-top:14px;justify-content:center"><button class="btn alt" onclick="resetH24()">ابدئي التحدي من جديد</button></div>`;return}
   box.innerHTML=head+list(true,st.checks)+`<p class="timer" id="h24t">الوقت المتبقي: ${left.txt}</p>
     <div class="row" style="margin-top:12px"><button class="btn" onclick="finishH24()">أنهيت اليوم</button><button class="btn alt" onclick="resetH24()">إلغاء التحدي</button></div>`;
   box.querySelectorAll('input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>{
-    const d=LS.get(H24KEY,null);d.checks[+c.dataset.i]=c.checked;LS.set(H24KEY,d);
+    const d=Object.assign({},PR().h24s);d.checks=[...d.checks];d.checks[+c.dataset.i]=c.checked;setP({h24s:d});
     if(c.checked)toast(d.checks.every(Boolean)?'أتممتِ الالتزامات الأربعة':'أحسنتِ، استمري')}));
-  h24Timer=setInterval(()=>{const d=LS.get(H24KEY,null);if(!d)return;const l=h24Left(d);if(l.ms===0)renderH24();else if($('h24t'))$('h24t').textContent='الوقت المتبقي: '+l.txt},30000);
+  h24Timer=setInterval(()=>{const d=PR().h24s;if(!d)return;const l=h24Left(d);if(l.ms===0)renderH24();else if($('h24t'))$('h24t').textContent='الوقت المتبقي: '+l.txt},30000);
 }
-function startH24(){LS.set(H24KEY,{start:Date.now(),checks:[false,false,false,false],done:false});toast('بدأ التحدي، بالتوفيق!');renderH24()}
-function finishH24(){const d=LS.get(H24KEY,null);if(!d)return;d.done=true;LS.set(H24KEY,d);renderH24()}
-function resetH24(){if(!confirm('هل تريدين بدء التحدي من جديد؟'))return;try{localStorage.removeItem(H24KEY)}catch(_){}renderH24()}
+function startH24(){setP({h24s:{start:Date.now(),checks:[false,false,false,false],done:false}});toast('بدأ التحدي، بالتوفيق!');renderH24()}
+function finishH24(){const d=PR().h24s;if(!d)return;setP({h24s:Object.assign({},d,{done:true})});renderH24()}
+function resetH24(){if(!confirm('هل تريدين بدء التحدي من جديد؟'))return;setP({h24s:null});renderH24()}
 
 /* ===== انشري الصدق ===== */
-const SPKEY='sidq-spread';
 const QUOTES=['الصدق طريقي إلى الثقة','قولي الحق ولو كان صعبًا','الاعتراف بالخطأ شجاعة','كلمتي وعدٌ أحفظه','الصدق يهدي إلى البر','صدقي يبني من حولي','لا أعرف… كلمة صادقة لا تُنقص قدري'];
 const MSG='صديقتي العزيزة، أحببت أن أذكّرك بأن الصدق يجعل الناس يثقون بنا، ويريح قلوبنا. فلنكن صادقات في كلامنا ووعودنا.';
 let qIdx=0;
-function spMark(i){const d=LS.get(SPKEY,[false,false,false]);d[i]=!d[i];LS.set(SPKEY,d);
-  if(d[i]){setJ({spread:true});toast(d.every(Boolean)?'نشرتِ الصدق بثلاث طرق، رائعة!':'أحسنتِ، أثرك جميل')}renderSpread()}
+function spMark(i){const d=[...PR().sp];d[i]=!d[i];setP({sp:d});
+  if(d[i])toast(d.every(Boolean)?'نشرتِ الصدق بثلاث طرق، رائعة!':'أحسنتِ، أثرك جميل');renderSpread()}
 function nextQuote(){qIdx=(qIdx+1)%QUOTES.length;$('qText').textContent=QUOTES[qIdx]}
 function printQuote(){$('printRoot').innerHTML=`<div class="pq">${esc(QUOTES[qIdx])}</div>`;setTimeout(()=>window.print(),300)}
 async function shareMsg(){
@@ -933,7 +1052,7 @@ async function shareMsg(){
   try{await navigator.clipboard.writeText(MSG);toast('نُسخت الرسالة، أرسليها لصديقتك')}catch(_){toast('انسخي الرسالة يدويًا')}
 }
 function renderSpread(){
-  const d=LS.get(SPKEY,[false,false,false]),n=d.filter(Boolean).length;
+  const d=PR().sp,n=d.filter(Boolean).length;
   const it=(i,ic,t,body,acts)=>`<div class="item ${d[i]?'done':''}"><div class="top">${icon(ic)}<div style="flex:1"><b>${t}</b>${body}</div></div>
     <div class="row">${acts}<button class="btn sm ${d[i]?'alt':''}" onclick="spMark(${i})">${d[i]?icon('check')+' نفّذتُه':'نفّذتُه'}</button></div></div>`;
   $('spread').innerHTML=`<div class="ch-head">${icon('send')}<div><h2>تحدي انشري الصدق</h2><p class="sub">نفّذي عملًا بسيطًا يشجع من حولك على الصدق. اختاري واحدًا أو أكثر.</p></div></div>
@@ -944,20 +1063,16 @@ function renderSpread(){
 }
 
 /* ===== تحديات إضافية ===== */
-const MKEY='sidq-more';
-const mGet=()=>LS.get(MKEY,[false,false,false,false]);
-function mSet(i,v){const d=mGet();d[i]=v;LS.set(MKEY,d)}
 const MORE=[
  {ic:'pen',t:'تحدي قصة قصيرة',d:'اكتبي قصة قصيرة توضح عاقبة الكذب وأثر الصدق.',type:'قصة قصيرة',ph:'كانت هناك طالبة...',min:80},
  {ic:'book',t:'تحدي آية أو حديث',d:'شاركي آية قرآنية أو حديثًا صحيحًا يحث على الصدق، مع ذكر المصدر.',type:'آية أو حديث',ph:'اكتبي نص الآية أو الحديث',min:15,src:true},
  {ic:'mic',t:'تحدي كلمة في الإذاعة',d:'قدّمي فقرة قصيرة عن الصدق في الإذاعة المدرسية.',radio:true},
  {ic:'leaf',t:'تحدي أثر الصدق',d:'اكتبي عبارة تبدأ بـ «عندما نكون صادقين، فإننا...» وشاركيها مع زميلاتك.',type:'أثر الصدق',start:'عندما نكون صادقين، فإننا ',min:30}
 ];
-const mWho=Object.assign({n:'',c:''},LS.get('sidq-me',{}));
+function mSet(i,v){const d=[...PR().mo];d[i]=v;setP({mo:d})}
 function renderMore(){
-  const d=mGet();
-  $('more').innerHTML=`<div class="ch-head">${icon('star')}<div><h2>تحديات إضافية</h2><p class="sub">ما تكتبينه هنا يظهر على حائط الصدق بعد مراجعة المعلمة.</p></div></div>
-  <div class="grid2"><div><label for="mName">اسمك</label><input id="mName" maxlength="40" value="${esc(mWho.n)}" oninput="mWho.n=this.value"></div><div><label for="mClass">الصف</label><input id="mClass" maxlength="20" placeholder="مثال: ٢/١" value="${esc(mWho.c)}" oninput="mWho.c=this.value"></div></div>
+  const d=PR().mo;
+  $('more').innerHTML=`<div class="ch-head">${icon('star')}<div><h2>تحديات إضافية</h2><p class="sub">ما تكتبينه هنا يظهر على حائط الصدق باسمك بعد مراجعة المعلمة.</p></div></div>
   ${MORE.map((c,i)=>`<div class="item ${d[i]?'done':''}"><div class="top">${icon(c.ic)}<div style="flex:1"><b>${c.t}</b><p class="hint">${c.d}</p></div></div>
    ${d[i]&&!c.radio?`<p class="timer" style="margin-top:8px">${icon('check')} أُرسلت، وستظهر بعد مراجعة المعلمة</p><div class="row"><button class="btn sm alt" onclick="mSet(${i},false);renderMore()">أرسلي مشاركة أخرى</button></div>`
    :c.radio?`<ul class="tips"><li>ابدئي بآية أو حديث عن الصدق.</li><li>اذكري موقفًا قصيرًا من الحياة اليومية.</li><li>اختمي بدعوة زميلاتك للصدق.</li><li>اجعليها دقيقة إلى دقيقتين.</li></ul>
@@ -966,16 +1081,14 @@ function renderMore(){
      <div class="row"><button class="btn sm" onclick="submitMore(${i},this)">أرسلي</button></div>`}
   </div>`).join('')}`;
 }
-function radioDone(i){const v=!mGet()[i];mSet(i,v);if(v){setJ({spread:true});toast('أحسنتِ، صوتك ينشر الصدق')}renderMore()}
+function radioDone(i){const v=!PR().mo[i];mSet(i,v);if(v)toast('أحسنتِ، صوتك ينشر الصدق');renderMore()}
 async function submitMore(i,btn){
-  const c=MORE[i],name=$('mName').value.trim(),cls=$('mClass').value.trim();let text=$('m'+i).value.trim();
-  if(!name){toast('اكتبي اسمك أولًا');$('mName').focus();return}
+  const c=MORE[i];let text=$('m'+i).value.trim();
   if(c.start&&(!text.startsWith(c.start.trim())||text.length<c.start.length+8))return toast('أكملي العبارة بعد «فإننا»');
   if(text.length<c.min)return toast(i===0?'اكتبي القصة في بضعة أسطر':'اكتبي نصًا أطول قليلًا');
   if(c.src){const s=$('mSrc').value.trim();if(!s){toast('اذكري المصدر');$('mSrc').focus();return}text+=`\n— ${s}`}
-  btn.disabled=true;try{await API.addStory({name,cls,text,type:c.type})}catch(_){btn.disabled=false;return}
-  mSet(i,true);setJ({spread:true});LS.set('sidq-me',{n:name,c:cls});renderMore();
-  toast('وصلت مشاركتك! ستظهر بعد مراجعة المعلمة');if(isTeacher)refreshAll();
+  btn.disabled=true;try{await API.addStory(ME.token,text,c.type)}catch(e){btn.disabled=false;if(e.code)toast(ERR[e.code]||'تعذّر الإرسال');return}
+  mSet(i,true);renderMore();toast('وصلت مشاركتك! ستظهر بعد مراجعة المعلمة');refreshAll().catch(()=>{});
 }
 
 /* ===== شهادة سفيرة الصدق ===== */
@@ -995,30 +1108,29 @@ function renderCert(){
   const j=J(),n=stepsDone(j);
   if(n<5){
     $('certBox').innerHTML=`<div class="locked">${icon('lock')}<h2 style="margin-top:8px">شهادتك تنتظرك</h2><p class="sub">أكملي المحطات الخمس لتحصلي على شهادة سفيرة الصدق. أنجزتِ ${ar(n)} من ${ar(5)}.</p></div>
-      <div class="journey">${STEPS.map((s,i)=>`<button class="step ${j[s.k]?'done':''}" onclick="go('${s.v}')${s.f?';openForm()':''}">${icon(j[s.k]?'check':s.ic)}<span>${s.t}</span><small>${j[s.k]?'تمّت':'ابدئي'}</small></button>`).join('')}</div>`;
+      <div class="journey">${STEPS.map(s=>`<button class="step ${j[s.k]?'done':''}" onclick="go('${s.v}')${s.f?';openForm()':''}">${icon(j[s.k]?'check':s.ic)}<span>${s.t}</span><small>${j[s.k]?'تمّت':'ابدئي'}</small></button>`).join('')}</div>`;
     return;
   }
   if(!j.cert){
-    const me=LS.get('sidq-me',{n:'',c:''});
-    $('certBox').innerHTML=`<div class="sec-title">${icon('medal')}<div><h2>مبارك! أكملتِ رحلتك</h2><p class="sub">اكتبي اسمك كما تحبين أن يظهر في الشهادة.</p></div></div>
-      <div class="grid2"><div><label for="cName">اسمك</label><input id="cName" maxlength="40" value="${esc(me.n)}"></div><div><label for="cClass">الصف</label><input id="cClass" maxlength="20" value="${esc(me.c)}"></div></div>
+    $('certBox').innerHTML=`<div class="sec-title">${icon('medal')}<div><h2>مبارك! أكملتِ رحلتك</h2><p class="sub">راجعي اسمك كما تحبين أن يظهر في الشهادة.</p></div></div>
+      <label for="cName">الاسم في الشهادة</label><input id="cName" maxlength="60" value="${esc(ME.name)}">
       <div class="row" style="margin-top:14px"><button class="btn gold" onclick="issueCert(this)">${icon('medal')}أصدري شهادتي</button></div>`;
     return;
   }
-  $('certBox').innerHTML=`<div class="sec-title">${icon('crown')}<div><h2>أنتِ سفيرة للصدق</h2><p class="sub">اطبعي شهادتك أو احفظيها بصيغة PDF من نافذة الطباعة.</p></div></div>
-    ${certHTML(j.cert.name,j.cert.cls,j.cert.at)}
+  $('certBox').innerHTML=`<div class="sec-title">${icon('crown')}<div><h2>أنتِ سفيرة للصدق</h2><p class="sub">اطبعي شهادتك، أو احفظيها ملفًا من نافذة الطباعة.</p></div></div>
+    ${certHTML(j.cert.name,ME.cls,j.cert.at)}
     <div class="row" style="margin-top:16px;justify-content:center"><button class="btn gold" onclick="printCert()">${icon('print')}اطبعي الشهادة</button>
     ${j.post?'':`<button class="btn alt" onclick="go('survey')">${icon('survey')}الاستبانة البعدية</button>`}<button class="btn ghost" onclick="editCert()">تعديل الاسم</button></div>`;
 }
 async function issueCert(btn){
-  const name=$('cName').value.trim(),cls=$('cClass').value.trim();
+  const name=$('cName').value.trim();
   if(name.length<2){toast('اكتبي اسمك');$('cName').focus();return}
   btn.disabled=true;
-  if(!J().certSent){try{await API.addCert(name,cls)}catch(_){btn.disabled=false;return}}
-  setJ({cert:{name,cls,at:Date.now()},certSent:true});toast('مبارك! صدرت شهادتك');renderCert();refreshAll().catch(()=>{});
+  try{await API.issueCert(ME.token,name)}catch(e){btn.disabled=false;if(e.code)toast(ERR[e.code]||'تعذّر الإصدار');return}
+  setP({cert:{name,at:Date.now()}});await saveP();toast('مبارك! صدرت شهادتك');renderCert();refreshAll().catch(()=>{});
 }
-function editCert(){const j=J();LS.set('sidq-me',{n:j.cert.name,c:j.cert.cls});setJ({cert:null});renderCert()}
-function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,j.cert.cls,j.cert.at);setTimeout(()=>window.print(),400)}
+function editCert(){setP({cert:null});renderCert()}
+function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setTimeout(()=>window.print(),400)}
 
 /* ===== لوحة المعلمة ===== */
 async function enterTeacher(email){
@@ -1033,10 +1145,14 @@ async function login(){
   catch(e){toast(e.message==='not-teacher'?'هذا الحساب ليس حساب معلمة':'البريد أو كلمة المرور غير صحيحة')}
   finally{$('loginBtn').disabled=false}
 }
-async function logout(){await API.signOut();isTeacher=false;DB.surveys=[];DB.certs=[];go('home');refreshAll().catch(()=>{})}
+async function logout(){await API.signOut();isTeacher=false;DB.surveys=[];DB.certs=[];DB.students=[];go(ME?'home':'auth');refreshAll().catch(()=>{})}
 async function setStatus(id,st){try{await API.setStatus(id,st)}catch(_){return}await refreshAll();toast(st==='ok'?'تم الاعتماد':'تم الإخفاء')}
 async function del(id){if(!confirm('حذف المشاركة نهائيًا؟'))return;try{await API.delStory(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
 async function delCert(id){if(!confirm('حذف الشهادة من السجل؟'))return;try{await API.delCert(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
+async function delStudent(id){const s=DB.students.find(x=>x.id===id);if(!confirm(`حذف حساب «${s?s.name:''}» وكل مشاركاتها نهائيًا؟`))return;try{await API.delStudent(id)}catch(_){return}await refreshAll();toast('تم حذف الحساب')}
+async function resetPin(id){const s=DB.students.find(x=>x.id===id);const p=(prompt(`الرمز السري الجديد لـ«${s?s.name:''}» (٤ أرقام):`)||'').trim().replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  if(!p)return;if(!/^\d{4}$/.test(p))return toast('الرمز ٤ أرقام');
+  try{await API.resetPin(id,p)}catch(e){if(e.code)toast(ERR[e.code]||'تعذّرت العملية');return}toast('تم تغيير الرمز. أخبري الطالبة به')}
 async function saveChallenge(open){
   const t=$('chText').value.trim();if(open&&!t)return toast('اكتبي نص التحدي أولًا');
   try{await API.saveSettings({challenge:{text:t,open}})}catch(_){return}await refreshAll();toast(open?'تم نشر التحدي':'تم قفل التحدي');
@@ -1044,42 +1160,59 @@ async function saveChallenge(open){
 async function saveClasses(){const v=$('classList').value.trim()||DEF_CLASSES;try{await API.saveSettings({classes:v})}catch(_){return}DB.classes=v;fillClassSelects();toast('تم حفظ الفصول')}
 async function clearSurveys(){if(!confirm('مسح كل إجابات الاستبانة نهائيًا؟'))return;try{await API.clearSurveys()}catch(_){return}DB.surveys=[];renderSurveyStats();toast('تم المسح')}
 
-function studentsMap(){
-  const m={};const add=(n,c)=>{const k=keyOf(n,c);return m[k]=m[k]||{name:String(n).trim(),cls:String(c||'').trim(),items:[],cert:null}};
-  DB.stories.forEach(s=>add(s.name,s.cls).items.push(s));
-  DB.certs.forEach(c=>add(c.name,c.cls).cert=c);
-  return Object.values(m);
-}
 function entryHTML(i){
   return `<div class="entry"><span class="tag">${esc(i.type||'موقف')}</span><p style="white-space:pre-wrap">${esc(i.text)}</p>
    <p class="hint">${date(i.at)} · <span class="${i.status==='ok'?'st-ok':'st-pend'}">${i.status==='ok'?'معتمدة':'تنتظر الاعتماد'}</span></p>
    <div class="row" style="margin-top:6px">${i.status==='ok'?`<button class="btn sm alt" onclick="setStatus('${i.id}','pending')">إخفاء</button>`:`<button class="btn sm ok" onclick="setStatus('${i.id}','ok')">اعتماد</button>`}
    <button class="btn sm no" onclick="del('${i.id}')">حذف</button></div></div>`;
 }
+const SPN=['عبارة معلّقة في الفصل','موقف يوضح أثر الصدق','رسالة تشجيعية لصديقة'];
+const MON=['قصة قصيرة','آية أو حديث','كلمة في الإذاعة','أثر الصدق'];
 function renderAdmin(){
   const st=DB.stories,ok=st.filter(s=>s.status==='ok').length,pre=DB.surveys.filter(s=>s.phase==='pre').length;
-  $('tkpis').innerHTML=[[studentsMap().length,'طالبة مشاركة'],[st.length,'مشاركة مكتوبة'],[st.length-ok,'تنتظر الاعتماد'],[ok,'معتمدة على الحائط'],[pre,'استبانة قبلية'],[DB.surveys.length-pre,'استبانة بعدية'],[DB.certs.length,'شهادة سفيرة']]
+  const done=DB.students.filter(s=>stepsDone(stepsOf(Object.assign(P0(),s.progress)))===5).length;
+  $('tkpis').innerHTML=[[DB.students.length,'طالبة مسجّلة'],[done,'أكملت الرحلة'],[st.length-ok,'تنتظر الاعتماد'],[ok,'معتمدة على الحائط'],[pre,'استبانة قبلية'],[DB.surveys.length-pre,'استبانة بعدية'],[DB.certs.length,'شهادة سفيرة']]
     .map(([n,l])=>`<div><b>${ar(n)}</b><span>${l}</span></div>`).join('');
   const p=st.filter(s=>s.status==='pending').sort((a,b)=>a.at-b.at);
   $('pending').innerHTML=p.length?p.map(s=>`<div class="pend"><b>${esc(s.name)}</b> <span class="hint">${esc(s.cls)}</span>${entryHTML(s)}</div>`).join(''):'<div class="empty">لا توجد مشاركات جديدة.</div>';
   const a=st.filter(s=>s.status==='ok').sort((x,y)=>y.at-x.at);
   $('approvedAdmin').innerHTML=a.length?a.map(s=>`<div class="pend"><b>${esc(s.name)}</b> <span class="hint">${esc(s.cls)}</span>${entryHTML(s)}</div>`).join(''):'<div class="empty">لا شيء بعد.</div>';
-  $('certList').innerHTML=DB.certs.length?DB.certs.map(c=>`<div class="amb"><div class="av">${esc(c.name[0]||'؟')}</div><div><div style="font-weight:700">${esc(c.name)}</div><div class="hint">${esc(c.cls||'بدون صف')} · ${date(c.at)}</div></div>
+  $('certList').innerHTML=DB.certs.length?DB.certs.map(c=>`<div class="amb"><div class="av">${esc(c.name[0]||'؟')}</div><div><div style="font-weight:700">${esc(c.name)}</div><div class="hint">${esc(c.cls||'')} · ${date(c.at)}</div></div>
     <div class="k"><button class="btn sm ghost" onclick="delCert('${c.id}')">حذف</button></div></div>`).join(''):'<div class="empty">لم تصدر شهادات بعد.</div>';
   if(document.activeElement!==$('chText'))$('chText').value=DB.challenge.text||'';
   if(document.activeElement!==$('classList'))$('classList').value=DB.classes||DEF_CLASSES;
   renderSurveyStats();renderStudents();
 }
+function studentRow(s){
+  const pr=Object.assign(P0(),s.progress),j=stepsOf(pr),n=stepsDone(j);
+  const items=DB.stories.filter(x=>x.student_id===s.id).sort((a,b)=>b.at-a.at);
+  const cert=DB.certs.find(c=>c.student_id===s.id);
+  const h=pr.h24s;
+  const bars=(ans)=>AXES.map((a,ai)=>`<div class="stat" style="padding:4px 0"><div style="display:flex;justify-content:space-between;font-size:.88rem"><span>${a.n}</span><span class="hint">${ar(axisPct(ans,ai))}٪</span></div><div class="bar"><i style="width:${axisPct(ans,ai)}%"></i></div></div>`).join('');
+  return `<details class="stu"><summary><div class="av">${esc(s.name[0]||'؟')}</div>
+   <div><div style="font-weight:700">${esc(s.name)} ${cert?`<span class="badge">${icon('medal')}سفيرة</span>`:''}</div><div class="hint">${esc(s.cls)} · آخر دخول ${date(s.last)}</div></div>
+   <div class="meta"><b style="color:var(--maroon)">${ar(n)}/${ar(5)}</b> محطات<br>${ar(items.length)} مشاركة</div></summary>
+   <div class="entries">
+    <div class="sgrid">${STEPS.map(t=>`<span class="${j[t.k]?'on':''}">${icon(j[t.k]?'check':t.ic)}${t.t}</span>`).join('')}</div>
+    <div class="sdet">
+     <div><h3>الاستبانة القبلية</h3>${pr.pre?bars(pr.pre):'<p class="hint">لم تُجب بعد.</p>'}</div>
+     <div><h3>الاستبانة البعدية</h3>${pr.post?bars(pr.post):'<p class="hint">لم تُجب بعد.</p>'}</div>
+     <div><h3>تحدي ٢٤ ساعة</h3>${h?`<ul class="mini">${H24ITEMS.map((t,i)=>`<li class="${h.checks[i]?'on':''}">${t}</li>`).join('')}</ul><p class="hint">${(h.done||Date.now()>h.start+DAY)?'انتهى':'جارٍ الآن'} · بدأ ${date(h.start)}</p>`:'<p class="hint">لم تبدأه بعد.</p>'}</div>
+     <div><h3>انشري الصدق والتحديات</h3><ul class="mini">${SPN.map((t,i)=>`<li class="${pr.sp[i]?'on':''}">${t}</li>`).join('')}${MON.map((t,i)=>`<li class="${pr.mo[i]?'on':''}">${t}</li>`).join('')}</ul></div>
+    </div>
+    ${cert?`<p class="hint">حصلت على شهادة سفيرة الصدق باسم «${esc(cert.name)}» في ${date(cert.at)}.</p>`:''}
+    <h3 style="margin-top:10px">مشاركاتها</h3>
+    ${items.map(entryHTML).join('')||'<p class="hint">لا توجد مشاركات مكتوبة.</p>'}
+    <div class="row" style="margin-top:12px"><button class="btn sm alt" onclick="resetPin('${s.id}')">${icon('lock')}تغيير الرمز السري</button><button class="btn sm no" onclick="delStudent('${s.id}')">حذف الحساب</button></div>
+   </div></details>`;
+}
 function renderStudents(){
-  const q=($('stSearch').value||'').trim(),c=$('stClass').value,all=studentsMap();
-  const cls=[...new Set(all.map(x=>x.cls).filter(Boolean))].sort();
+  const q=norm($('stSearch').value||''),c=$('stClass').value,all=DB.students;
+  const cls=[...new Set(all.map(x=>x.cls))].sort();
   $('stClass').innerHTML='<option value="">كل الفصول</option>'+cls.map(x=>`<option>${esc(x)}</option>`).join('');$('stClass').value=cls.includes(c)?c:'';
-  const list=all.filter(x=>(!q||x.name.includes(q))&&(!c||x.cls===c)).sort((a,b)=>b.items.length-a.items.length);
-  if(!list.length){$('students').innerHTML='<div class="empty">لا توجد طالبات بعد.</div>';return}
-  $('students').innerHTML=list.map(x=>{const ok=x.items.filter(i=>i.status==='ok').length;
-    return `<details class="stu"><summary><div class="av">${esc(x.name[0]||'؟')}</div><div><div style="font-weight:700">${esc(x.name)} ${x.cert?`<span class="badge">${icon('medal')}سفيرة</span>`:''}</div><div class="hint">${esc(x.cls||'بدون صف')}</div></div>
-     <div class="meta">${ar(x.items.length)} مشاركة<br>${ar(ok)} معتمدة</div></summary>
-     <div class="entries">${x.cert?`<p class="hint" style="padding-top:8px">حصلت على شهادة سفيرة الصدق في ${date(x.cert.at)}.</p>`:''}${x.items.sort((a,b)=>b.at-a.at).map(entryHTML).join('')||'<p class="hint">لا توجد مشاركات مكتوبة.</p>'}</div></details>`}).join('');
+  const cv=$('stClass').value;
+  const list=all.filter(x=>(!q||norm(x.name).includes(q))&&(!cv||x.cls===cv)).sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name,'ar'));
+  $('students').innerHTML=list.length?list.map(studentRow).join(''):'<div class="empty">لا توجد طالبات مسجّلات بعد.</div>';
 }
 function renderSurveyStats(){
   const f=$('svFilter').value,ph=$('svPhase').value;
@@ -1099,11 +1232,22 @@ function renderSurveyStats(){
       <div class="dist">${OPTS.map((o,j)=>`<span>${o}: ${ar(cnt[j])}</span>`).join('')}</div></div>`})});
   $('svStats').innerHTML=h;
 }
+function dl(name,rows){
+  const csv='﻿'+rows.map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=name;a.click();
+}
 function exportCSV(){
-  const rows=[['النوع','الفصل','التاريخ',...AXES.map(a=>'محور '+a.n+' ٪'),...QS.map((_,i)=>'عبارة '+(i+1))]];
-  DB.surveys.forEach(r=>rows.push([r.phase==='post'?'بعدية':'قبلية',r.cls,new Date(r.at).toLocaleDateString('ar-SA'),...AXES.map((_,ai)=>axisPct(r.ans,ai)),...r.ans.map(v=>OPTS[4-v])]));
-  const csv='﻿'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='نتائج-استبانة-الصدق.csv';a.click();
+  const nm=id=>{const s=DB.students.find(x=>x.id===id);return s?s.name:''};
+  const rows=[['الطالبة','النوع','الفصل','التاريخ',...AXES.map(a=>'محور '+a.n+' ٪'),...QS.map((_,i)=>'عبارة '+(i+1))]];
+  DB.surveys.forEach(r=>rows.push([nm(r.student_id),r.phase==='post'?'بعدية':'قبلية',r.cls,new Date(r.at).toLocaleDateString('ar-SA'),...AXES.map((_,ai)=>axisPct(r.ans,ai)),...r.ans.map(v=>OPTS[4-v])]));
+  dl('نتائج-استبانة-الصدق.csv',rows);
+}
+function exportStudents(){
+  const rows=[['الطالبة','الفصل','المحطات المنجزة',...STEPS.map(s=>s.t),'القبلية ٪','البعدية ٪','المشاركات','المعتمدة','الشهادة','آخر دخول']];
+  DB.students.forEach(s=>{const pr=Object.assign(P0(),s.progress),j=stepsOf(pr),it=DB.stories.filter(x=>x.student_id===s.id);
+    const avg=a=>a?Math.round(a.reduce((x,y)=>x+y,0)/60*100):'';
+    rows.push([s.name,s.cls,stepsDone(j),...STEPS.map(t=>j[t.k]?'نعم':'لا'),avg(pr.pre),avg(pr.post),it.length,it.filter(x=>x.status==='ok').length,DB.certs.some(c=>c.student_id===s.id)?'نعم':'لا',new Date(s.last).toLocaleDateString('ar-SA')])});
+  dl('تقدّم-الطالبات.csv',rows);
 }
 const PMSG=[
  'الابنة التي تجد في بيتها مساحة آمنة للحقيقة، تكون أقدر على اختيار الصدق حين تخرج إلى الحياة.',
@@ -1118,21 +1262,21 @@ const SELF=['هل أقول «لا أعرف» عندما لا أعرف؟','هل �
 $('selfCheck').innerHTML=SELF.map((s,i)=>`<li><label><input type="checkbox" ${LS.get('sidq-self',[])[i]?'checked':''} onchange="const d=LS.get('sidq-self',[]);d[${i}]=this.checked;LS.set('sidq-self',d)">${s}</label></li>`).join('');
 
 /* ===== البدء ===== */
-(function migrate(){ // من النسخة السابقة
-  try{const j=J();const p={};
-    const old=LS.get('sidq-survey-done',null);if(old&&!j.pre)p.pre=old;
-    const h=LS.get(H24KEY,null);if(h&&(h.done||Date.now()>h.start+DAY))p.h24=true;
-    if(LS.get(SPKEY,[]).some(Boolean)||mGet().some(Boolean))p.spread=true;
-    if(Object.keys(p).length)LS.set(JKEY,Object.assign(j,p));}catch(_){}})();
 $('modeHint').textContent=sb?'استخدمي حساب المعلمة المسجّل في Supabase.':'وضع التجربة: لم يُربط Supabase. كلمة المرور ١٢٣٤ والبريد غير مطلوب.';
-renderH24();renderSpread();renderMore();render();
-const chkHash=()=>{if(location.hash==='#teacher')go('teacher')};window.addEventListener('hashchange',chkHash);chkHash();
+renderAuth();renderH24();renderSpread();renderMore();
+const chkHash=()=>{if(location.hash==='#teacher')go('teacher');else if(curView==='teacher'&&!isTeacher)go(ME?'home':'auth')};
+window.addEventListener('hashchange',chkHash);
+go(location.hash==='#teacher'?'teacher':'auth');
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAll().catch(()=>{})});
 (async()=>{
-  try{const em=await API.session();if(em){isTeacher=true;$('whoAmI').textContent='مسجّلة الدخول باسم: '+em;if(location.hash==='#teacher')go('teacher')}}catch(_){}
   try{await refreshAll()}catch(_){}
+  renderAuthClasses();
+  const tok=LS.get('sidq-token',null);
+  if(tok){try{ME=await API.me(tok);ME.progress=ME.progress||{};renderH24();renderSpread();renderMore();if(location.hash!=='#teacher')go('home');refreshAll().catch(()=>{})}catch(e){if(e.code==='bad_token')LS.del('sidq-token')}}
+  try{const em=await API.session();if(em){isTeacher=true;$('whoAmI').textContent='مسجّلة الدخول باسم: '+em;if(location.hash==='#teacher')go('teacher');refreshAll().catch(()=>{})}}catch(_){}
 })();
 window.addEventListener('afterprint',()=>{$('printRoot').innerHTML=''});
+
 </script>
 </body>
 </html>
