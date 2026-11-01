@@ -587,18 +587,7 @@ textarea{min-height:120px;resize:vertical}
 
   <!-- ===== المعلمة ===== -->
   <section class="view" id="v-teacher">
-    <div class="panel" id="tLogin">
-      <h2>دخول المعلمة</h2>
-      <label for="tEmail">البريد الإلكتروني</label>
-      <input id="tEmail" type="email" autocomplete="username" dir="ltr">
-      <label for="pin">كلمة المرور</label>
-      <input id="pin" type="password" autocomplete="current-password" dir="ltr" onkeydown="if(event.key==='Enter')login()">
-      <p class="hint" id="modeHint" style="margin-top:8px"></p>
-      <div class="row" style="margin-top:14px">
-        <button class="btn" id="loginBtn" onclick="login()">دخول</button>
-        <button class="btn alt" onclick="go('home')">رجوع</button>
-      </div>
-    </div>
+    <div class="panel" id="tLogin" style="max-width:560px;margin-inline:auto;margin-top:-40px;position:relative;z-index:3"></div>
     <div id="tPanel" style="display:none">
       <div class="panel"><h2>لوحة المعلمة</h2><p class="sub" id="whoAmI"></p><div class="tk" id="tkpis"></div></div>
       <div class="panel">
@@ -682,7 +671,7 @@ textarea{min-height:120px;resize:vertical}
 <div class="print-root" id="printRoot"></div>
 
 <script>
-/* ===== الإعداد: بيانات مشروع Supabase ===== */
+/* ===== الإعداد ===== */
 const SUPABASE_URL='https://nqdcxjiddxgmdueovujp.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xZGN4amlkZHhnbWR1ZW92dWpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMTMzNTgsImV4cCI6MjEwODg4OTM1OH0.-tkrvId-iijX76EYWq4rdUwqFHhNdQA323X8t_biCrY';
 
@@ -700,6 +689,7 @@ let DB={stories:[],challenge:{text:'',open:false},classes:'',stats:{ambassadors:
 let isTeacher=false;
 let ME=null;      // الطالبة المسجّلة: {token,id,name,cls,progress}
 let MINE=[];      // مشاركاتها
+let TT=null,TNAME='';   // جلسة المعلمة
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -713,7 +703,7 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const norm=t=>String(t||'').trim().replace(/\s+/g,' ').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
 const ERR={bad_name:'اكتبي اسمك الثلاثي',bad_class:'اختاري فصلك',bad_pin:'الرمز السري ٤ أرقام',exists:'هذا الاسم مسجّل في هذا الفصل. ادخلي من «لدي حساب»، أو أضيفي اسم الجد',
   bad_login:'الاسم أو الفصل أو الرمز غير صحيح',locked:'محاولات كثيرة خاطئة. حاولي بعد ربع ساعة، أو اطلبي من معلمتك إعادة الرمز',bad_token:'انتهت جلستك، ادخلي مرة أخرى',
-  bad_text:'اكتبي نصًا أطول قليلًا',forbidden:'هذه العملية للمعلمة فقط'};
+  bad_text:'اكتبي نصًا أطول قليلًا',bad_code:'رمز المدرسة غير صحيح. اطلبيه من إدارة المبادرة',bad_pass:'كلمة المرور ٦ أحرف أو أرقام على الأقل',t_exists:'هذا الاسم مسجّل. ادخلي من «لدي حساب»',forbidden:'هذه العملية للمعلمة فقط'};
 function fail(e){console.error(e);toast(ERR[e&&e.code]||'تعذّر الاتصال، تأكدي من الإنترنت وحاولي مجددًا');throw e}
 const err=c=>{const e=new Error(c);e.code=c;return e};
 
@@ -747,7 +737,7 @@ async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)fa
 
 const API={
   async load(){
-    if(!sb){const d=Lget();return {stories:isTeacher?d.stories:d.stories.filter(s=>s.status==='ok'),challenge:d.challenge,classes:d.classes,stats:localStats(d)}}
+    if(!sb){const d=Lget();return {stories:d.stories.filter(s=>s.status==='ok'),challenge:d.challenge,classes:d.classes,stats:localStats(d)}}
     const [st,se,ss]=await Promise.all([
       sb.from('sidq_stories').select('id,name,cls,text,type,status,created_at,student_id').order('created_at',{ascending:false}).limit(2000),
       sb.from('sidq_settings').select('challenge_text,challenge_open,classes').eq('id',1).maybeSingle(),
@@ -791,68 +781,64 @@ const API={
   /* المعلمة */
   async setStatus(id,status){
     if(!sb){const d=Lget();const x=d.stories.find(s=>s.id===id);if(x)x.status=status;Lset(d);return}
-    const {error}=await sb.from('sidq_stories').update({status}).eq('id',id);if(error)fail(error);
+    await rpc('sidq_t_set_status',{p_tt:TT,p_id:id,p_status:status});
   },
   async delStory(id){
     if(!sb){const d=Lget();d.stories=d.stories.filter(s=>s.id!==id);Lset(d);return}
-    const {error}=await sb.from('sidq_stories').delete().eq('id',id);if(error)fail(error);
+    await rpc('sidq_t_delete',{p_tt:TT,p_kind:'story',p_id:id});
   },
   async teacherCert(st,name){
     if(!sb){const d=Lget();d.certs=d.certs.filter(c=>c.student_id!==st.id);d.certs.push({id:uid(),name,cls:st.cls,student_id:st.id,at:Date.now()});Lset(d);return}
-    const del=await sb.from('sidq_certs').delete().eq('student_id',st.id);if(del.error)fail(del.error);
-    const {error}=await sb.from('sidq_certs').insert({name,cls:st.cls,student_id:st.id});if(error)fail(error);
+    await rpc('sidq_t_issue_cert',{p_tt:TT,p_student:st.id,p_name:name});
   },
   async delCert(id){
     if(!sb){const d=Lget();d.certs=d.certs.filter(s=>s.id!==id);Lset(d);return}
-    const {error}=await sb.from('sidq_certs').delete().eq('id',id);if(error)fail(error);
+    await rpc('sidq_t_delete',{p_tt:TT,p_kind:'cert',p_id:id});
   },
   async delStudent(id){
     if(!sb){const d=Lget();d.students=d.students.filter(s=>s.id!==id);['stories','surveys','certs'].forEach(k=>d[k]=d[k].filter(x=>x.student_id!==id));Lset(d);return}
-    const {error}=await sb.from('sidq_students').delete().eq('id',id);if(error)fail(error);
+    await rpc('sidq_t_delete',{p_tt:TT,p_kind:'student',p_id:id});
   },
   async resetPin(id,pin){
     if(!sb){const d=Lget(),s=d.students.find(s=>s.id===id);if(s)s.pin=pin;Lset(d);return}
-    await rpc('sidq_teacher_reset_pin',{p_student:id,p_pin:pin});
+    await rpc('sidq_t_reset_pin',{p_tt:TT,p_student:id,p_pin:pin});
   },
   async saveSettings(p){
     if(!sb){const d=Lget();Object.assign(d,p);Lset(d);return}
-    const row={id:1};if('challenge' in p){row.challenge_text=p.challenge.text;row.challenge_open=p.challenge.open}if('classes' in p)row.classes=p.classes;
-    const {error}=await sb.from('sidq_settings').upsert(row);if(error)fail(error);
+    await rpc('sidq_t_settings',{p_tt:TT,p_text:'challenge' in p?p.challenge.text:null,p_open:'challenge' in p?p.challenge.open:null,p_classes:'classes' in p?p.classes:null});
   },
   async teacherData(){
-    if(!sb){const d=Lget();return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs,students:d.students.map(s=>({id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},created:s.created,last:s.last}))}}
-    const page=async(q)=>{const out=[];for(let f=0;;f+=1000){const {data,error}=await q().range(f,f+999);if(error)fail(error);out.push(...data);if(data.length<1000)break}return out};
-    const [sv,ce,stu]=await Promise.all([
-      page(()=>sb.from('sidq_surveys').select('cls,ans,phase,student_id,created_at').order('created_at')),
-      page(()=>sb.from('sidq_certs').select('id,name,cls,student_id,created_at').order('created_at',{ascending:false})),
-      page(()=>sb.from('sidq_students').select('id,name,cls,progress,created_at,last_seen').order('created_at'))]);
-    return {surveys:sv.map(r=>({cls:r.cls,ans:r.ans,phase:r.phase||'pre',student_id:r.student_id,at:ms(r.created_at)})),
-      certs:ce.map(r=>({id:r.id,name:r.name,cls:r.cls||'',student_id:r.student_id,at:ms(r.created_at)})),
-      students:stu.map(r=>({id:r.id,name:r.name,cls:r.cls,progress:r.progress||{},created:ms(r.created_at),last:ms(r.last_seen)}))};
+    if(!sb){const d=Lget();return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs,students:d.students.map(s=>({id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},created:s.created,last:s.last})),stories:d.stories}}
+    const r=await rpc('sidq_t_data',{p_tt:TT});
+    return {stories:r.stories.map(x=>({id:x.id,name:x.name,cls:x.cls||'',text:x.text,type:x.type||'',status:x.status,student_id:x.student_id,at:ms(x.created_at)})),
+      surveys:r.surveys.map(x=>({cls:x.cls,ans:x.ans,phase:x.phase||'pre',student_id:x.student_id,at:ms(x.created_at)})),
+      certs:r.certs.map(x=>({id:x.id,name:x.name,cls:x.cls||'',student_id:x.student_id,at:ms(x.created_at)})),
+      students:r.students.map(x=>({id:x.id,name:x.name,cls:x.cls,progress:x.progress||{},created:ms(x.created_at),last:ms(x.last_seen)}))};
   },
   async clearSurveys(){
     if(!sb){const d=Lget();d.surveys=[];Lset(d);return}
-    const {error}=await sb.from('sidq_surveys').delete().gte('created_at','1970-01-01');if(error)fail(error);
+    await rpc('sidq_t_delete',{p_tt:TT,p_kind:'surveys',p_id:null});
   },
-  async signIn(email,pw){
-    if(!sb){if(pw!=='1234')throw new Error('bad');return 'وضع التجربة'}
-    const {data,error}=await sb.auth.signInWithPassword({email,password:pw});if(error)throw error;
-    const t=await sb.from('sidq_teachers').select('user_id').eq('user_id',data.user.id).maybeSingle();
-    if(!t.data){await sb.auth.signOut();throw new Error('not-teacher')}
-    return data.user.email;
+  async tRegister(name,pass,code){
+    if(!sb){const d=Lget();d.teachers=d.teachers||[];if(code!=='2468')throw err('bad_code');if(norm(name).length<3)throw err('bad_name');if(pass.length<6)throw err('bad_pass');
+      if(d.teachers.some(t=>t.key===norm(name)))throw err('t_exists');const t={token:uid(),name:name.trim(),key:norm(name),pass};d.teachers.push(t);Lset(d);return {token:t.token,name:t.name}}
+    return rpc('sidq_t_register',{p_name:name,p_pass:pass,p_code:code});
   },
-  async session(){
-    if(!sb)return null;const {data}=await sb.auth.getSession();const u=data.session&&data.session.user;if(!u)return null;
-    const t=await sb.from('sidq_teachers').select('user_id').eq('user_id',u.id).maybeSingle();return t.data?u.email:null;
+  async tLogin(name,pass){
+    if(!sb){const t=(Lget().teachers||[]).find(t=>t.key===norm(name)&&t.pass===pass);if(!t)throw err('bad_login');return {token:t.token,name:t.name}}
+    return rpc('sidq_t_login',{p_name:name,p_pass:pass});
   },
-  async signOut(){if(sb)await sb.auth.signOut()}
+  async tMe(tt){
+    if(!sb){const t=(Lget().teachers||[]).find(t=>t.token===tt);if(!t)throw err('bad_token');return {token:t.token,name:t.name}}
+    return rpc('sidq_t_me',{p_tt:tt});
+  }
 };
 
 async function refreshAll(){
   const d=await API.load();
   DB.stories=d.stories;DB.challenge=d.challenge;DB.classes=d.classes;
   DB.stats=d.stats||{ambassadors:0,approved:0,classes:0,certs:0};
-  if(isTeacher){const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students}
+  if(isTeacher){try{const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students;if(t.stories)DB.stories=t.stories}catch(e){if(e.code==='bad_token')teacherExpired()}}
   if(ME){try{MINE=await API.myStories(ME.token);const m=await API.me(ME.token);ME.cert=m.cert||null}catch(_){}}
   render();
 }
@@ -909,7 +895,7 @@ function forceLogout(){ME=null;LS.del('sidq-token');toast(ERR.bad_token);renderA
 function renderWho(){
   const w=$('whoChip');
   if(ME&&curView!=='teacher')w.innerHTML=`<span>${icon('crown')} ${esc(ME.name.split(' ')[0])} · ${esc(ME.cls)}</span><button onclick="logoutStudent()">خروج</button>`;
-  else if(isTeacher&&curView==='teacher')w.innerHTML=`<span>لوحة المعلمة</span>`;
+  else if(isTeacher&&curView==='teacher')w.innerHTML=`<span>${icon('school')} ${esc(TNAME)}</span><button onclick="logout()">خروج</button>`;
   else w.innerHTML='';
   w.style.display=w.innerHTML?'':'none';
 }
@@ -1156,19 +1142,31 @@ function renderCert(){
 function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setTimeout(()=>window.print(),400)}
 
 /* ===== لوحة المعلمة ===== */
-async function enterTeacher(email){
-  isTeacher=true;$('pin').value='';$('whoAmI').textContent=sb?'مسجّلة الدخول باسم: '+email:'وضع التجربة: البيانات محفوظة في هذا الجهاز فقط.';
+let tTab='login';
+function renderTAuth(){
+  const reg=tTab==='reg';
+  $('tLogin').innerHTML=`<div class="sec-title">${icon('school')}<div><h2>${reg?'تسجيل معلمة جديدة':'دخول المعلمة'}</h2><p class="sub">${reg?'سجّلي مرة واحدة باسمك وكلمة مرور ورمز المدرسة.':'ادخلي باسمك وكلمة المرور.'}</p></div></div>
+   <div class="tabs2"><button class="${reg?'':'on'}" onclick="tTab='login';renderTAuth()">لدي حساب</button><button class="${reg?'on':''}" onclick="tTab='reg';renderTAuth()">معلمة جديدة</button></div>
+   <label for="tName">الاسم</label><input id="tName" maxlength="60" autocomplete="username" placeholder="مثال: أ. منى سعد الحربي">
+   <div class="grid2"><div><label for="tPass">كلمة المرور</label><input id="tPass" type="password" autocomplete="${reg?'new-password':'current-password'}" dir="ltr"></div>
+   ${reg?`<div><label for="tPass2">أعيدي كتابتها</label><input id="tPass2" type="password" autocomplete="new-password" dir="ltr"></div>`:'<div></div>'}</div>
+   ${reg?`<label for="tCode">رمز المدرسة</label><input id="tCode" autocomplete="off" dir="ltr" style="text-align:center;letter-spacing:.2em"><p class="hint" style="margin-top:6px">تحصلين على رمز المدرسة من إدارة المبادرة. كلمة المرور ٦ أحرف أو أرقام على الأقل.</p>`:''}
+   ${sb?'':'<p class="hint" style="margin-top:8px">وضع التجربة: رمز المدرسة 2468.</p>'}
+   <div class="row" style="margin-top:16px"><button class="btn gold" id="tBtn" onclick="${reg?'tDoRegister()':'tDoLogin()'}">${reg?'سجّليني':'دخول'}</button><button class="btn alt" onclick="go(ME?'home':'auth')">رجوع</button></div>`;
+  ['tName','tPass','tPass2','tCode'].forEach(id=>{const el=$(id);if(el)el.addEventListener('keydown',ev=>{if(ev.key==='Enter')(reg?tDoRegister:tDoLogin)()})});
+}
+async function tDoLogin(){const n=$('tName').value.trim(),p=$('tPass').value;if(!n||!p)return toast('اكتبي الاسم وكلمة المرور');
+  $('tBtn').disabled=true;try{enterTeacher(await API.tLogin(n,p))}catch(e){toast(ERR[e.code]||'تعذّر الاتصال، حاولي مجددًا')}finally{if($('tBtn'))$('tBtn').disabled=false}}
+async function tDoRegister(){const n=$('tName').value.trim(),p=$('tPass').value,p2=$('tPass2').value,c=$('tCode').value.trim();
+  if(norm(n).length<3){toast('اكتبي اسمك');$('tName').focus();return}if(p.length<6){toast(ERR.bad_pass);$('tPass').focus();return}if(p!==p2){toast('كلمتا المرور غير متطابقتين');return}if(!c){toast('اكتبي رمز المدرسة');$('tCode').focus();return}
+  $('tBtn').disabled=true;try{enterTeacher(await API.tRegister(n,p,c))}catch(e){toast(ERR[e.code]||'تعذّر الاتصال، حاولي مجددًا')}finally{if($('tBtn'))$('tBtn').disabled=false}}
+async function enterTeacher(t){
+  TT=t.token;TNAME=t.name;LS.set('sidq-ttoken',TT);isTeacher=true;
+  $('whoAmI').textContent='مرحبًا، '+TNAME+(sb?'':' · وضع التجربة: البيانات محفوظة في هذا الجهاز فقط.');
   go('teacher');await refreshAll();
 }
-async function login(){
-  const email=$('tEmail').value.trim(),pw=$('pin').value;
-  if(sb&&(!email||!pw))return toast('اكتبي البريد وكلمة المرور');
-  $('loginBtn').disabled=true;
-  try{await enterTeacher(await API.signIn(email,pw))}
-  catch(e){toast(e.message==='not-teacher'?'هذا الحساب ليس حساب معلمة':'البريد أو كلمة المرور غير صحيحة')}
-  finally{$('loginBtn').disabled=false}
-}
-async function logout(){await API.signOut();isTeacher=false;DB.surveys=[];DB.certs=[];DB.students=[];go(ME?'home':'auth');refreshAll().catch(()=>{})}
+function teacherExpired(){TT=null;isTeacher=false;LS.del('sidq-ttoken');toast(ERR.bad_token);renderTAuth();go('teacher')}
+async function logout(){TT=null;TNAME='';LS.del('sidq-ttoken');isTeacher=false;DB.surveys=[];DB.certs=[];DB.students=[];tTab='login';renderTAuth();go('teacher');refreshAll().catch(()=>{})}
 async function setStatus(id,st){try{await API.setStatus(id,st)}catch(_){return}await refreshAll();toast(st==='ok'?'تم الاعتماد':'تم الإخفاء')}
 async function del(id){if(!confirm('حذف المشاركة نهائيًا؟'))return;try{await API.delStory(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
 async function delCert(id){if(!confirm('سحب الشهادة؟ لن تظهر للطالبة بعد ذلك.'))return;try{await API.delCert(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
@@ -1201,7 +1199,7 @@ function renderAdmin(){
   const st=DB.stories,ok=st.filter(s=>s.status==='ok').length,pre=DB.surveys.filter(s=>s.phase==='pre').length;
   const done=DB.students.filter(s=>stepsDone(stepsOf(Object.assign(P0(),s.progress)))===5).length;
   $('tkpis').innerHTML=[[DB.students.length,'طالبة مسجّلة'],[done,'أكملت الرحلة'],[st.length-ok,'تنتظر الاعتماد'],[ok,'معتمدة على الحائط'],[pre,'استبانة قبلية'],[DB.surveys.length-pre,'استبانة بعدية'],[DB.certs.length,'شهادة سفيرة']]
-    .map(([n,l])=>`<div><b>${ar(n)}</b><span>${l}</span></div>`).join('');
+    .map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join('');
   const p=st.filter(s=>s.status==='pending').sort((a,b)=>a.at-b.at);
   $('pending').innerHTML=p.length?p.map(s=>`<div class="pend"><b>${esc(s.name)}</b> <span class="hint">${esc(s.cls)}</span>${entryHTML(s)}</div>`).join(''):'<div class="empty">لا توجد مشاركات جديدة.</div>';
   const a=st.filter(s=>s.status==='ok').sort((x,y)=>y.at-x.at);
@@ -1437,7 +1435,7 @@ const SELF=['هل أقول «لا أعرف» عندما لا أعرف؟','هل �
 $('selfCheck').innerHTML=SELF.map((s,i)=>`<li><label><input type="checkbox" ${LS.get('sidq-self',[])[i]?'checked':''} onchange="const d=LS.get('sidq-self',[]);d[${i}]=this.checked;LS.set('sidq-self',d)">${s}</label></li>`).join('');
 
 /* ===== البدء ===== */
-$('modeHint').textContent=sb?'استخدمي حساب المعلمة المسجّل في Supabase.':'وضع التجربة: لم يُربط Supabase. كلمة المرور ١٢٣٤ والبريد غير مطلوب.';
+renderTAuth();
 $('heroLogo').src=LOGO;renderKit();
 renderAuth();renderH24();renderSpread();renderMore();
 const chkHash=()=>{if(location.hash==='#teacher')go('teacher');else if(curView==='teacher'&&!isTeacher)go(ME?'home':'auth')};
@@ -1449,7 +1447,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAll
   renderAuthClasses();
   const tok=LS.get('sidq-token',null);
   if(tok){try{ME=await API.me(tok);ME.progress=ME.progress||{};renderH24();renderSpread();renderMore();if(location.hash!=='#teacher')go('home');refreshAll().catch(()=>{})}catch(e){if(e.code==='bad_token')LS.del('sidq-token')}}
-  try{const em=await API.session();if(em){isTeacher=true;$('whoAmI').textContent='مسجّلة الدخول باسم: '+em;if(location.hash==='#teacher')go('teacher');refreshAll().catch(()=>{})}}catch(_){}
+  const tt=LS.get('sidq-ttoken',null);
+  if(tt){try{const t=await API.tMe(tt);TT=t.token;TNAME=t.name;isTeacher=true;$('whoAmI').textContent='مرحبًا، '+TNAME;if(location.hash==='#teacher')go('teacher');refreshAll().catch(()=>{})}catch(e){if(e.code==='bad_token')LS.del('sidq-ttoken')}}
 })();
 window.addEventListener('afterprint',()=>{$('printRoot').innerHTML='';setPage('')});
 
