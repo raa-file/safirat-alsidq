@@ -215,6 +215,7 @@ body.gate .hero{padding-bottom:70px}
 .rep-q p{margin:0 0 2px}
 .rep-sign{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 16px 16px;text-align:center}
 .rep-sign span{display:block;font-weight:700;color:var(--maroon)}
+.rep-sign em{display:block;font-style:normal;margin-top:1mm}
 .rep-sign i{display:block;border-bottom:1.5px dashed var(--ink-soft);height:36px}
 .rep-cls .bar-row{margin-top:6px}
 .rep-cls .bar-row span{font-size:.9rem}
@@ -883,7 +884,7 @@ textarea{min-height:120px;resize:vertical}
           <label for="cBody">وصف التحدي</label><textarea id="cBody" maxlength="3000" style="min-height:130px"></textarea>
           <label for="cCodes">رموز المصفوفة (اختياري)</label><input id="cCodes" maxlength="80" placeholder="مثال: إ-مع1">
           <input type="hidden" id="cWeek">
-          <div class="row" style="margin-top:14px"><button class="btn" onclick="publishCh(this)"><svg class="ic"><use href="#i-target"/></svg>نشر تحدي جديد</button></div>
+          <div class="row" style="margin-top:14px"><button class="btn" id="pubBtn" onclick="publishCh(this)"><svg class="ic"><use href="#i-target"/></svg>نشر تحدي جديد</button></div>
         </div>
         <div>
           <h2 class="v-title" id="wkHead" style="margin-top:22px">أسابيع الفصل الأول: الخطة والقسم المسؤول والأدلة</h2>
@@ -1725,7 +1726,7 @@ function reportHTML(pr){
     ${topA.length?topA.map((a,i)=>`<div class="rep-top"><span class="rk">${ar(i+1)}</span><div style="flex:1"><b>${esc(a.name)}</b> <span class="hint">${esc(a.cls||'')}</span></div><span class="badge">${icon('medal')}${ar(a.n)} ${a.n===1?'وسام':'أوسمة'}</span></div>`).join(''):'<p class="hint">تظهر بعد منح الأوسمة.</p>'}</div>
    <div class="rep-s"><h3>أبرز المواقف</h3>
     ${best.length?best.map(s=>`<div class="rep-q"><p>«${esc(s.text)}»</p><span class="hint">${esc(s.name)} · ${esc(s.cls||'')}${s.medal?' · وسام':''}</span></div>`).join(''):'<p class="hint">تظهر بعد اعتماد المواقف.</p>'}</div>
-   ${pr?`<div class="rep-sign"><div><span>منسقة المبادرة</span><i></i></div><div><span>وكيلة الشؤون الطلابية</span><i></i></div><div><span>مديرة المدرسة</span><i></i></div></div>`:`<p class="hint" style="padding:0 16px 16px">التقرير بترويسة المدرسة وتواقيع المبادرة، مقاس A4.</p>`}
+   ${pr?`<div class="rep-sign">${[['منسقة المبادرة',cfgV().sup],['النائبة',cfgV().dep],['مديرة المدرسة',cfgV().pri]].map(([t,n])=>`<div><span>${t}</span>${n?`<em>${esc(n)}</em>`:''}<i></i></div>`).join('')}</div>`:`<p class="hint" style="padding:0 16px 16px">التقرير بترويسة المدرسة وتواقيع المبادرة، مقاس A4.</p>`}
   </div>`;
 }
 function renderReport(){$('reportBox').innerHTML=reportHTML()}
@@ -1811,6 +1812,7 @@ const WEEKS=[
  {t:'الثقة | ماذا يصنع الصدق؟',c:'إ-أ1 · إ-أ2 · إ-أ3',b:'الثقة ثمرة تتراكم مع تكرار المواقف الصادقة: «الثقة تُبنى ببطء... وقد تُهدم بموقف واحد».\nالصدق يبني: الثقة، والشجاعة، والمسؤولية، والنزاهة، والاتساق.\nالتحدي: موقف صرتِ فيه موثوقة، وكلمة لشخص تثقين بصدقه، وتشجيع زميلة على قول الحقيقة.'}];
 const paras=t=>esc(t||'').split('\n').map(l=>`<p>${l}</p>`).join('');
 function renderWeek(){
+  {const no=!DB.me.is_admin&&!cfgV().tpub,pb=$('pubBtn');if(pb){pb.disabled=no;let h=$('pubHint');if(!h){h=document.createElement('p');h.id='pubHint';h.className='hint';h.style.marginTop='6px';pb.parentElement.after(h)}h.textContent=no?'نشر التحدي للمشرفة فقط حاليًا (من الإعدادات).':''}}
   $('wkTitle').textContent='تحدي الأسبوع · '+termLbl();$('wkHead').textContent='أسابيع '+TERMS[(DB.term||1)-1][0]+': الخطة والقسم المسؤول والأدلة';
   const c=DB.challenge,n=Math.max(WEEKS.length,DB.weeks||8);
   $('wkNow').innerHTML=c.open&&c.text?`<div class="wk-now"><span>منشور الآن للطالبات: <b>${c.week?'الأسبوع '+ar(c.week)+' · ':''}${esc(c.title||'تحدي الأسبوع')}</b></span><button class="btn sm ghost" onclick="closeCh(this)">إيقاف التحدي</button></div>`
@@ -1834,7 +1836,7 @@ function renderWeek(){
 }
 function useWeek(i){const w=WEEKS[i-1];$('cTitle').value=w.t;$('cBody').value=w.b;$('cCodes').value=w.c;$('cWeek').value=i;
   $('cTitle').scrollIntoView({behavior:'smooth',block:'center'});toast('عُبّئ التحدي، راجعيه ثم انشريه')}
-async function publishCh(btn){const t=$('cTitle').value.trim(),b=$('cBody').value.trim(),cd=$('cCodes').value.trim();
+async function publishCh(btn){if(!DB.me.is_admin&&!cfgV().tpub)return toast('نشر التحدي للمشرفة فقط حاليًا');const t=$('cTitle').value.trim(),b=$('cBody').value.trim(),cd=$('cCodes').value.trim();
   if(t.length<2)return toast('اكتبي عنوان التحدي');if(b.length<5)return toast('اكتبي وصف التحدي');
   const tpl=+$('cWeek').value||0,w=tpl&&WEEKS[tpl-1]&&WEEKS[tpl-1].t===t?tpl:0;
   const next=w||(DB.challenge.week||0)+1;
