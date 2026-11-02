@@ -471,8 +471,8 @@ textarea{min-height:120px;resize:vertical}
   .print-root{display:block!important}
 }
 .print-root{display:none}
-.print-root .cert-wrap{max-width:none;width:297mm;margin:0}
-.print-root .cert{border-radius:0;box-shadow:none;width:297mm;height:210mm;aspect-ratio:auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.print-root .cert-wrap{max-width:none;width:176mm;height:248mm;aspect-ratio:auto;margin:0 auto;position:relative;overflow:hidden;container-type:size;direction:ltr}
+.print-root .cert{border-radius:0;box-shadow:none;width:100cqh;height:100cqw;aspect-ratio:auto;container-type:inline-size;font-size:2cqh;position:absolute;top:0;left:0;transform-origin:0 0;transform:translateX(100cqw) rotate(90deg);direction:rtl;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .print-root .pq{width:297mm;height:210mm;display:grid;place-items:center;font-family:"Amiri",serif;font-size:56pt;color:#6E1C35;text-align:center;padding:30mm;border:6mm solid #6E1C35;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 </style>
 </head>
@@ -1477,6 +1477,7 @@ async function submitMore(i,btn){
 }
 
 /* ===== شهادة سفيرة الصدق ===== */
+const CERT_PAGE='A4 portrait;margin:24mm 0 0';
 function certHTML(name,cls,at,o){o=o||{};
   const d=new Date(at).toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
   return `<div class="cert-wrap"><div class="cert"><div class="bgstar"></div><div class="frame"></div><div class="frame2"></div>
@@ -1506,7 +1507,7 @@ function renderCert(){
   $('certBox').innerHTML=`<div class="locked">${icon('medal')}<h2 style="margin-top:8px">مبارك! أكملتِ رحلتك</h2><p class="sub">أنهيتِ المحطات الخمس، وستصدر معلمتك شهادتك قريبًا. ستظهر هنا فور إصدارها.</p>
     ${DB.phase==='post'&&!j.post?`<div class="row" style="margin-top:14px;justify-content:center"><button class="btn gold" onclick="go('survey')">${icon('survey')}أجيبي الاستبانة البعدية</button></div>`:''}</div>`;
 }
-function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setTimeout(()=>window.print(),400)}
+function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
 
 /* ===== لوحة المعلمة ===== */
 let tTab='code';
@@ -1550,7 +1551,7 @@ async function issueCertFor(id){const s=DB.students.find(x=>x.id===id);if(!s)ret
   if(done<5&&!confirm(`أنجزت «${s.name}» ${ar(done)} من ${ar(5)} محطات فقط. هل تريدين إصدار الشهادة لها؟`))return;
   const name=(prompt('الاسم كما يظهر في الشهادة:',s.name)||'').trim();if(name.length<2)return;
   try{await API.teacherCert(s,name)}catch(_){return}await refreshAll();toast('صدرت الشهادة، وستظهر للطالبة في حسابها')}
-function printCertFor(id){const c=DB.certs.find(x=>x.student_id===id||x.id===id);if(!c)return;$('printRoot').innerHTML=certHTML(c.name,c.cls,c.at);setTimeout(()=>window.print(),400)}
+function printCertFor(id){const c=DB.certs.find(x=>x.student_id===id||x.id===id);if(!c)return;$('printRoot').innerHTML=certHTML(c.name,c.cls,c.at);setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
 async function delStudent(id){const s=DB.students.find(x=>x.id===id);if(!confirm(`حذف حساب «${s?s.name:''}» وكل مشاركاتها نهائيًا؟`))return;try{await API.delStudent(id)}catch(_){return}await refreshAll();toast('تم حذف الحساب')}
 async function resetPin(id){const s=DB.students.find(x=>x.id===id);const p=(prompt(`الرمز السري الجديد لـ«${s?s.name:''}» (٤ أرقام):`)||'').trim().replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
   if(!p)return;if(!/^\d{4}$/.test(p))return toast('الرمز ٤ أرقام');
@@ -1763,10 +1764,10 @@ const medalsOf=id=>DB.stories.filter(s=>s.student_id===id&&s.status==='ok'&&s.me
 function certTeacher(){const t=$('certT').value.trim();if(!t){toast('اكتبي اسمك قبل الطباعة');$('certT').focus();return null}LS.set('sidq-cert-teacher',t);return t}
 function certOpts(s,t){const T=TERMS[(DB.term||1)-1];return {teacher:t,medals:medalsOf(s.id),term:T[0]+' · '+T[1]}}
 function printOneCert(){const t=certTeacher();if(!t)return;const s=DB.students.find(x=>x.id===$('certSel').value);if(!s)return toast('اختاري السفيرة');
-  $('printRoot').innerHTML=certHTML(s.name,s.cls,Date.now(),certOpts(s,t));setPage('');setTimeout(()=>window.print(),400)}
+  $('printRoot').innerHTML=certHTML(s.name,s.cls,Date.now(),certOpts(s,t));setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
 function printAllCerts(){const t=certTeacher();if(!t)return;const list=vis(DB.students).slice().sort(byCls);if(!list.length)return;
   if(list.length>5&&!confirm(`طباعة ${ar(list.length)} شهادة؟`))return;
-  $('printRoot').innerHTML=list.map(s=>certHTML(s.name,s.cls,Date.now(),certOpts(s,t))).join('');setPage('');setTimeout(()=>window.print(),600)}
+  $('printRoot').innerHTML=list.map(s=>certHTML(s.name,s.cls,Date.now(),certOpts(s,t))).join('');setPage(CERT_PAGE);setTimeout(()=>window.print(),600)}
 
 /* ===== الحقيبة ===== */
 const KSEC=[['morning','الطابور الصباحي','mic'],['break','نشاط الاستراحة','leaf'],['school','الأنشطة المدرسية','school'],['reserve','حصص الاحتياط','survey'],['library','الحصة المكتبية','book'],['parents','رسائل أولياء الأمور','letter']];
