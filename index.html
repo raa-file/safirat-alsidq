@@ -860,15 +860,9 @@ textarea{min-height:120px;resize:vertical}
 
       <div class="tview" id="tv-teachers">
         <h2 class="v-title">المعلمات</h2>
-        <p class="sub">كل معلمة تدخل لوحتها برمزها، وتشوف فصولها فقط وتعتمد مواقفها.</p>
+        <p class="sub">كل معلمة تدخل لوحتها باسمها وكلمة المرور، وتشوف فصولها فقط وتعتمد مواقفها.</p>
         <div id="tAdmin">
-          <div class="tlink-box"><div style="flex:1;min-width:0"><h3>رابط لوحة المعلمات</h3><p class="hint">رابط واحد لكل المعلمات، وكل معلمة تدخل برمزها</p><div class="tlink" id="tLink" dir="ltr"></div></div><button class="btn gold" onclick="copyTLink()">نسخ الرابط</button></div>
-          <div class="panel">
-            <h3 class="add-h"><svg class="ic"><use href="#i-pen"/></svg>إضافة معلمات</h3>
-            <label for="tBulk">كل معلمة في سطر: الاسم ثم نقطتان ثم فصولها</label>
-            <textarea id="tBulk" style="min-height:110px" placeholder="أ. نورة: السابع/1، السابع/2&#10;أ. ريم: الثامن/1"></textarea>
-            <div class="row" style="margin-top:12px"><button class="btn" onclick="addTeachers(this)">إضافة</button><button class="btn alt" onclick="printTCards()"><svg class="ic"><use href="#i-print"/></svg>طباعة بطاقات الرموز</button></div>
-          </div>
+          <div class="tlink-box"><div style="flex:1;min-width:0"><h3>رابط لوحة المعلمات</h3><p class="hint">رابط واحد لكل المعلمات: تسجّل كل معلمة مرة واحدة باسمها وكلمة مرور ورمز المدرسة</p><div class="tlink" id="tLink" dir="ltr"></div></div><button class="btn gold" onclick="copyTLink()">نسخ الرابط</button></div>
         </div>
         <div class="panel"><div id="tList"></div></div>
         <div class="panel">
@@ -1510,17 +1504,11 @@ function renderCert(){
 function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
 
 /* ===== لوحة المعلمة ===== */
-let tTab='code';
+let tTab='login';
 function renderTAuth(){
   const reg=tTab==='reg';
-  if(tTab==='code'){
-    $('tLogin').innerHTML=`<div class="sec-title">${icon('school')}<div><h2>دخول المعلمة</h2><p class="sub">ادخلي برمزك اللي وصلك من مشرفة المبادرة.</p></div></div>
-     <div class="tabs2"><button class="on">برمز المعلمة</button><button onclick="tTab='login';renderTAuth()">بالاسم وكلمة المرور</button></div>
-     <label for="tCodeIn">رمز المعلمة</label><input id="tCodeIn" maxlength="8" autocomplete="off" autocapitalize="characters" dir="ltr" style="text-align:center;letter-spacing:.3em;font-size:1.3rem;text-transform:uppercase">
-     <div class="row" style="margin-top:16px"><button class="btn gold" id="tBtn" onclick="tDoCode()">دخول</button><button class="btn alt" onclick="go(ME?'home':'auth')">رجوع</button></div>`;
-    $('tCodeIn').addEventListener('keydown',ev=>{if(ev.key==='Enter')tDoCode()});return}
   $('tLogin').innerHTML=`<div class="sec-title">${icon('school')}<div><h2>${reg?'تسجيل معلمة جديدة':'دخول المعلمة'}</h2><p class="sub">${reg?'سجّلي مرة واحدة باسمك وكلمة مرور ورمز المدرسة.':'ادخلي باسمك وكلمة المرور.'}</p></div></div>
-   <div class="tabs2"><button onclick="tTab='code';renderTAuth()">برمز المعلمة</button><button class="${reg?'':'on'}" onclick="tTab='login';renderTAuth()">بالاسم وكلمة المرور</button><button class="${reg?'on':''}" onclick="tTab='reg';renderTAuth()">حساب جديد</button></div>
+   <div class="tabs2"><button class="${reg?'':'on'}" onclick="tTab='login';renderTAuth()">لدي حساب</button><button class="${reg?'on':''}" onclick="tTab='reg';renderTAuth()">معلمة جديدة</button></div>
    <label for="tName">الاسم</label><input id="tName" maxlength="60" autocomplete="username" placeholder="مثال: أ. منى سعد الحربي">
    <div class="grid2"><div><label for="tPass">كلمة المرور</label><input id="tPass" type="password" autocomplete="${reg?'new-password':'current-password'}" dir="ltr"></div>
    ${reg?`<div><label for="tPass2">أعيدي كتابتها</label><input id="tPass2" type="password" autocomplete="new-password" dir="ltr"></div>`:'<div></div>'}</div>
@@ -1542,7 +1530,7 @@ async function enterTeacher(t){
   go('teacher');await refreshAll();
 }
 function teacherExpired(){TT=null;isTeacher=false;LS.del('sidq-ttoken');toast(ERR.bad_token);renderTAuth();go('teacher')}
-async function logout(){TT=null;TNAME='';LS.del('sidq-ttoken');isTeacher=false;DB.surveys=[];DB.certs=[];DB.students=[];tTab='code';renderTAuth();go('teacher');refreshAll().catch(()=>{})}
+async function logout(){TT=null;TNAME='';LS.del('sidq-ttoken');isTeacher=false;DB.surveys=[];DB.certs=[];DB.students=[];tTab='login';renderTAuth();go('teacher');refreshAll().catch(()=>{})}
 async function setStatus(id,st){try{await API.setStatus(id,st)}catch(e){if(e.code)toast(ERR[e.code]||'تعذّرت العملية');return}await refreshAll();toast(st==='ok'?'تم الاعتماد':'تم الإخفاء')}
 async function del(id){if(!confirm('حذف المشاركة نهائيًا؟'))return;try{await API.delStory(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
 async function delCert(id){if(!confirm('سحب الشهادة؟ لن تظهر للطالبة بعد ذلك.'))return;try{await API.delCert(id)}catch(_){return}await refreshAll();toast('تم الحذف')}
@@ -1929,9 +1917,7 @@ function renderTeachers(){
   $('tAdmin').style.display=adm?'':'none';
   if(adm)$('tLink').textContent=teacherLink();
   $('tList').innerHTML=DB.teachers.length?DB.teachers.map(t=>`<div class="amb t-row"><div class="av">${esc(t.name.replace(/^أ\.?\s*/,'')[0]||'؟')}</div><div style="flex:1;min-width:150px"><div style="font-weight:700">${esc(t.name)} ${t.is_admin?'<span class="badge">مشرفة</span>':''} ${t.id===DB.me.id?'<span class="hint">(أنتِ)</span>':''}</div><div class="hint">فصولها: ${tClasses(t).length?esc(tClasses(t).join('، ')):'لم تُحدَّد'} · آخر دخول ${date(t.last_seen)}</div></div>
-   ${adm&&t.code?`<span class="tcode" dir="ltr">${esc(t.code)}</span>`:''}
    <div class="k">${t.id===DB.me.id||adm?`<button class="btn sm alt" onclick="editCls('${t.id}')">${t.id===DB.me.id?'فصولي':'فصولها'}</button>`:''}
-   ${adm?`<button class="btn sm ghost" onclick="tAct('${t.id}','newcode')">${t.code?'رمز جديد':'إنشاء رمز'}</button>`:''}
    ${adm&&t.id!==DB.me.id?`${t.is_admin?`<button class="btn sm ghost" onclick="tAct('${t.id}','unadmin')">إلغاء الإشراف</button>`:`<button class="btn sm ghost" onclick="tAct('${t.id}','admin')">جعلها مشرفة</button>`}<button class="btn sm ghost" onclick="tAct('${t.id}','delete')">حذف</button>`:''}</div>
    ${clsEdit===t.id?clsEditor(t):''}</div>`).join('')
    :`<div class="t-empty">${icon('school')}<p>لا معلمات بعد.</p></div>`;
