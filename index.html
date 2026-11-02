@@ -1774,7 +1774,7 @@ function renderKit(){
   const cards=KSEC.map(([k,t,ic])=>{const items=DB.kit.filter(x=>x.section===k),K=KIT.find(x=>x.k===k)||{items:[]},sug=K.items;
    return `<div class="panel kit-sec"><div class="sec-title">${icon(ic)}<div><h2>${t}</h2>${K.d?`<p class="sub">${esc(K.d)}</p>`:''}</div></div>
    ${!items.length?`<p class="hint" style="margin-top:8px">لا توجد مواد في هذا القسم بعد. أضيفي أول مادة من فوق.</p>${sug.length?`<button class="btn sm alt" onclick="seedKit(this,'${k}')">إضافة المواد المقترحة (${ar(sug.length)})</button>`:''}`:''}
-   ${items.map(it=>`<div class="kit-item"><div class="kh"><b>${esc(it.title)}</b>${it.by?`<span class="hint">أضافتها: ${esc(it.by)}</span>`:''}</div>
+   ${items.map(it=>`<div class="kit-item"><div class="kh"><b>${esc(it.title)}</b></div>
      ${it.body?`<div class="kb">${esc(it.body).split('\n').map(l=>`<p>${l}</p>`).join('')}</div>`:''}
      <div class="row" style="margin-top:8px">
       ${it.body?`<button class="btn sm alt" onclick="copyKit('${it.id}')">نسخ</button>`:''}
@@ -1826,7 +1826,7 @@ function renderWeek(){
       <div class="wk-sub">${icon('tag')}القسم المسؤول:</div>
       <div class="wk-dept"><input id="wd${i}" maxlength="80" placeholder="مثال: قسم الرياضة" value="${esc(dept)}"><button class="btn sm alt" onclick="saveDept(${i},this)">حفظ</button></div>
       <div class="wk-ev"><span class="wk-sub" style="margin:0">${icon('clip')}<b>الأدلة (${ar(ev.length)})</b></span><button class="btn sm gold" onclick="pickEv(${i})">رفع صور أو ملفات</button></div>
-      ${ev.length?ev.map(e=>`<div class="ev">${icon(/^image\//.test(e.mime)?'photo':'file')}<span class="nm" title="${esc(e.name)}">${esc(e.name)}</span><span class="hint">${e.by?esc(e.by)+' · ':''}${date(e.at)}</span>
+      ${ev.length?ev.map(e=>`<div class="ev">${icon(/^image\//.test(e.mime)?'photo':'file')}<span class="nm" title="${esc(e.name)}">${esc(e.name)}</span><span class="hint">${date(e.at)}</span>
         <button class="btn sm ghost" onclick="openEv('${e.id}')">عرض</button>${(e.created_by===DB.me.id||DB.me.is_admin)?`<button class="btn sm ghost" onclick="delEv('${e.id}')">حذف</button>`:''}</div>`).join('')
         :'<p class="hint" style="margin-top:6px">لا أدلة بعد. يرفعها القسم المسؤول عن هذا الأسبوع.</p>'}
     </div>`}
