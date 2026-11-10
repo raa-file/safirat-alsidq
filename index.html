@@ -222,6 +222,13 @@ body.gate .hero{padding-bottom:70px}
 .print-root .rep-cls{display:grid;grid-template-columns:repeat(3,1fr);column-gap:18px;grid-auto-flow:column;grid-template-rows:repeat(10,auto)}
 .print-root .rep-cls .bar-row{grid-template-columns:62px 1fr 24px;gap:6px}
 .print-root .rep-s,.print-root .rep-sign{break-inside:avoid}
+.sv-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sv-btn .sec-title{flex:1;min-width:220px}
+.sv-btn a.btn{text-decoration:none}
+.solo-note,.solo-back{display:none}
+body.solo .solo-note{display:block;max-width:560px;margin:14px auto 0;position:relative;z-index:3;background:var(--gold-soft);border-radius:14px;padding:12px 16px;text-align:center;font-weight:600}
+body.solo .solo-back{display:block;text-align:center;margin:18px 0}
+body.solo .solo-back a{color:var(--maroon);font-weight:700}
 .site-qr{width:110px;height:110px;flex:none;background:#fff;border-radius:12px;padding:6px;display:grid;place-items:center}
 .site-qr svg{width:100%;height:100%}
 .badge .ic{width:14px;height:14px}
@@ -423,7 +430,9 @@ textarea{min-height:120px;resize:vertical}
 .cert .body{font-size:1.95cqw;line-height:1.9;max-width:64cqw;margin-top:.6cqw}
 .cert .ay{font-family:"Amiri",serif;font-size:2.2cqw;color:var(--maroon);margin-top:.8cqw}
 .cert .foot{display:flex;justify-content:space-between;width:100%;margin-top:1.6cqw;font-size:1.6cqw;color:var(--ink-soft)}
-.cert .foot div{min-width:20cqw;border-top:.15cqw solid var(--line);padding-top:.5cqw}
+.cert .foot div{flex:1;margin:0 1.2cqw;border-top:.15cqw solid var(--line);padding-top:.5cqw;display:flex;flex-direction:column}
+.cert .foot span{font-size:1.35cqw}
+.cert .foot b{color:var(--ink);font-size:1.6cqw;min-height:2.2cqw}
 .locked{text-align:center;padding:10px}
 .locked .ic{width:64px;height:64px}
 
@@ -527,7 +536,7 @@ textarea{min-height:120px;resize:vertical}
   <div class="wrap">
     <img class="school" id="heroLogo" alt="شعار المدرسة">
     <h1>سفيرات الصدق</h1>
-    <p>الصدق خُلُق نتمسّك به كل يوم، وأثرٌ طيب نتركه في كل قلب.</p>
+    <p id="heroSub">الصدق خُلُق نتمسّك به كل يوم، وأثرٌ طيب نتركه في كل قلب.</p>
   </div>
 </header>
 
@@ -553,9 +562,11 @@ textarea{min-height:120px;resize:vertical}
   <!-- ===== الرئيسية ===== -->
   <section class="view" id="v-auth">
     <div class="panel" id="authBox" style="max-width:560px;margin-inline:auto;margin-top:-40px;position:relative;z-index:3"></div>
+    <p class="solo-note">ادخلي بحسابك في المنصة لتجيبي الاستبانة. إذا ما عندك حساب، سجّلي من «طالبة جديدة».</p>
   </section>
 
   <section class="view" id="v-home">
+    <div class="panel sv-btn" id="svBtnBox"><div class="sec-title"><svg class="ic"><use href="#i-survey"/></svg><div><h2>استبانة قيمة الصدق</h2><p class="sub"></p></div></div><a class="btn gold" href="#survey"><svg class="ic"><use href="#i-survey"/></svg>افتحي الاستبانة</a></div>
     <div class="panel">
       <div class="sec-title"><svg class="ic"><use href="#i-medal"/></svg><div><h2>رحلتك نحو شهادة سفيرة الصدق</h2><p class="sub">خمس محطات، وفي آخرها شهادتك.</p></div></div>
       <div class="journey" id="journey"></div>
@@ -708,6 +719,7 @@ textarea{min-height:120px;resize:vertical}
     <div class="panel" id="sHead"></div>
     <div id="sDone"></div>
     <form id="sForm" onsubmit="submitSurvey(event)"></form>
+    <p class="solo-back"><a href="#" onclick="event.preventDefault();go('home')">افتحي منصة سفيرات الصدق</a></p>
   </section>
 
   <!-- ===== التحديات ===== -->
@@ -899,9 +911,9 @@ textarea{min-height:120px;resize:vertical}
           <h2>الإعدادات</h2>
           <label for="cSchool">اسم المدرسة</label><input id="cSchool">
           <label for="cTerm">الفصل الدراسي الحالي (الذي تراه الطالبات)</label><select id="cTerm"></select>
-          <label for="cSup">المبادرة بإشراف المعلمة</label><input id="cSup">
-          <label for="cDep">النائبة</label><input id="cDep">
-          <label for="cPri">مديرة المدرسة</label><input id="cPri">
+          <label for="cSup">رائدة المبادرة (تظهر في التقرير)</label><input id="cSup">
+          <label for="cDep">النائبة (تظهر في الشهادة والتقرير)</label><input id="cDep">
+          <label for="cPri">مديرة المدرسة (تظهر في الشهادة والتقرير)</label><input id="cPri">
           <label for="cClasses">الفصول (فصل في كل سطر)</label><textarea id="cClasses" style="min-height:110px"></textarea>
           <label class="chk"><input type="checkbox" id="cWall">الكتابة على الحائط مفتوحة للطالبات</label>
           <label class="chk"><input type="checkbox" id="cTpub">المعلمات يقدرن ينشرن تحدي الأسبوع</label>
@@ -1021,16 +1033,17 @@ async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)fa
 
 const API={
   async load(){
-    if(!sb){const d=Lget();return {stories:d.stories.filter(s=>s.status==='ok'),challenge:d.challenge,classes:d.classes,stats:localStats(d),phase:d.phase||'pre',weeks:d.weeks||8,start:d.start||null}}
+    if(!sb){const d=Lget();return {stories:d.stories.filter(s=>s.status==='ok'),challenge:d.challenge,classes:d.classes,stats:localStats(d),phase:d.phase||'pre',pub:{dep:(d.cfg||{}).dep||'',pri:(d.cfg||{}).pri||''},weeks:d.weeks||8,start:d.start||null}}
     let [st,se,ss]=await Promise.all([
       sb.from('sidq_stories').select('id,name,cls,text,type,status,created_at,student_id').order('created_at',{ascending:false}).limit(2000),
-      sb.from('sidq_settings').select('challenge_text,challenge_open,challenge_title,challenge_codes,challenge_week,classes,survey_phase,weeks_total,start_date').eq('id',1).maybeSingle(),
+      sb.from('sidq_settings').select('challenge_text,challenge_open,challenge_title,challenge_codes,challenge_week,classes,survey_phase,weeks_total,start_date,deputy,principal').eq('id',1).maybeSingle(),
       sb.rpc('sidq_public_stats')]);
+    if(se.error&&se.error.code==='42703')se=await sb.from('sidq_settings').select('challenge_text,challenge_open,challenge_title,challenge_codes,challenge_week,classes,survey_phase,weeks_total,start_date').eq('id',1).maybeSingle();
     let se2=se;if(se.error&&se.error.code==='42703')se2=await sb.from('sidq_settings').select('challenge_text,challenge_open,classes,survey_phase,weeks_total,start_date').eq('id',1).maybeSingle();
     if(st.error)fail(st.error);if(se2.error)fail(se2.error);se=se2;
     const c=se.data||{};
     return {stories:(st.data||[]).map(r=>({id:r.id,name:r.name,cls:r.cls||'',text:r.text,type:r.type||'',status:r.status,student_id:r.student_id,at:ms(r.created_at)})),
-      challenge:{title:c.challenge_title||'',text:c.challenge_text||'',codes:c.challenge_codes||'',week:c.challenge_week||0,open:!!c.challenge_open},classes:c.classes||'',stats:ss.error?null:ss.data,phase:c.survey_phase||'pre',weeks:c.weeks_total||8,start:c.start_date||null};
+      challenge:{title:c.challenge_title||'',text:c.challenge_text||'',codes:c.challenge_codes||'',week:c.challenge_week||0,open:!!c.challenge_open},classes:c.classes||'',stats:ss.error?null:ss.data,phase:c.survey_phase||'pre',pub:{dep:c.deputy||'',pri:c.principal||''},weeks:c.weeks_total||8,start:c.start_date||null};
   },
   async register(name,cls,pin){
     if(!sb){const d=Lget();const k=norm(name);
@@ -1192,7 +1205,7 @@ const API={
 async function refreshAll(){
   const d=await API.load();
   DB.stories=d.stories;DB.challenge=d.challenge;DB.classes=d.classes;
-  DB.stats=d.stats||{ambassadors:0,approved:0,classes:0,certs:0};DB.phase=d.phase;DB.weeks=d.weeks;DB.start=d.start;
+  DB.stats=d.stats||{ambassadors:0,approved:0,classes:0,certs:0};DB.pub=d.pub||{};DB.phase=d.phase;DB.weeks=d.weeks;DB.start=d.start;
   if(isTeacher){try{const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students;if(t.stories)DB.stories=t.stories;DB.kit=t.kit;DB.obs=t.obs;DB.teachers=t.teachers;DB.me=t.me;DB.term=+t.term||1;DB.schoolCode=t.school_code||'';DB.wdept=t.wdept||{};DB.ev=t.ev||[]}catch(e){if(e.code==='bad_token')teacherExpired()}}
   if(isTeacher){try{const c=await API.cfgGet();DB.cfg=c.cfg||null;DB.amb=c.amb||[];applyCfg()}catch(_){}}
   if(ME){try{MINE=await API.myStories(ME.token);const m=await API.me(ME.token);ME.cert=m.cert||null}catch(_){}}
@@ -1201,6 +1214,9 @@ async function refreshAll(){
 
 /* ===== التنقل ===== */
 let curView='home';
+const isSolo=()=>location.hash==='#survey';let HERO_SUB='';
+function renderSvBtn(){const b=$('svBtnBox');if(!b)return;const j=ME?J():{},ph=DB.phase,done=ph==='pre'?!!(j.pre):ph==='post'?!!(j.post):true;
+  b.style.display=ph==='closed'?'none':'';b.querySelector('p').textContent=done?'أجبتِ عليها، شكرًا لك. يمكنك فتحها لترَي نتيجتك.':(ph==='post'?'الاستبانة البعدية مفتوحة الآن: دقيقتان فقط.':'الاستبانة القبلية مفتوحة الآن: دقيقتان فقط.')}
 function go(v){
   if(!ME&&!['auth','teacher'].includes(v))v='auth';
   curView=v;
@@ -1210,6 +1226,11 @@ function go(v){
   const home=v==='home',gate=v==='auth'||v==='teacher';
   $('kpis').style.display=home?'':'none';$('cta').style.display=(home||v==='learn')?'':'none';$('nav').style.display=gate?'none':'';
   document.body.classList.toggle('gate',gate);
+  if(isSolo()&&!['survey','auth'].includes(v))history.replaceState(null,'',location.pathname+location.search);
+  const solo=isSolo();document.body.classList.toggle('solo',solo);
+  if(solo){$('nav').style.display='none';$('kpis').style.display='none';$('cta').style.display='none'}
+  $('heroSub').textContent=solo?'استبانة قيمة الصدق · دقيقتان فقط':HERO_SUB;
+  if(v==='home')renderSvBtn();
   if(v==='teacher'){$('tLogin').style.display=isTeacher?'none':'block';$('tPanel').style.display=isTeacher?'block':'none'}
   if(v==='survey')renderSurvey();
   if(v==='cert')renderCert();
@@ -1274,6 +1295,7 @@ function render(){
     <div><div style="font-weight:700">${esc(a.name)}</div><div class="hint">${esc(a.cls)}</div></div>
     <div class="k">${icon('star').repeat(Math.min(a.n,5))}${a.n>5?' '+ar(a.n):''}</div></div>`).join('')
     :'<div class="empty">تظهر السفيرات هنا بعد اعتماد أول موقف.</div>';
+  renderSvBtn();
   const c=DB.challenge;
   $('chBox').style.display=c.open&&c.text?'block':'none';
   $('chBox').innerHTML=c.open&&c.text?`<div class="ch-head">${icon('target')}<div><h2>تحدي الأسبوع${c.week?' '+ar(c.week):''}${c.title?': '+esc(c.title):''}</h2><p class="sub">جرّبيه هذا الأسبوع، ثم اكتبي موقفك.</p></div></div><div class="chal">${esc(c.text).split('\n').map(l=>`<p style="margin:3px 0">${l}</p>`).join('')}</div>
@@ -1472,6 +1494,76 @@ async function submitMore(i,btn){
 }
 
 /* ===== شهادة سفيرة الصدق ===== */
+/* ===== شهادة PDF بمقاس A4 (عرضي) ===== */
+function certNames(){const c=isTeacher?cfgV():(DB.pub||{});return {dep:c.dep||CFG0.dep,pri:c.pri||CFG0.pri}}
+function symImg(id,color){const s=document.getElementById(id);if(!s)return Promise.resolve(null);
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${s.getAttribute('viewBox')}" width="400" height="400">${s.innerHTML}</svg>`;
+  return loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg))}
+function loadImg(src){return new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src})}
+async function certFonts(){try{await Promise.all(['400 40px "IBM Plex Sans Arabic"','600 40px "IBM Plex Sans Arabic"','700 40px "IBM Plex Sans Arabic"','400 40px "Amiri"','700 40px "Amiri"'].map(f=>document.fonts.load(f,'صدق')))}catch(_){}}
+function wrapLines(ctx,t,max){const w=t.split(' '),L=[];let cur='';for(const x of w){const n=cur?cur+' '+x:x;if(ctx.measureText(n).width>max&&cur){L.push(cur);cur=x}else cur=n}if(cur)L.push(cur);return L}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+async function drawCert(c,s,A){
+  const W=c.width,H=c.height,u=W/100,M='#6E1C35',G='#B8955A',INK='#2B1A20',SOFT='#6F5E64';
+  const F=(w,sz,fam)=>`${w} ${sz*u}px ${fam==='a'?'"Amiri",serif':'"IBM Plex Sans Arabic",sans-serif'}`;
+  c.ctx.setTransform(1,0,0,1,0,0);const x=c.ctx;
+  x.fillStyle='#FFFCF6';x.fillRect(0,0,W,H);
+  // نجوم خفيفة
+  x.save();x.globalAlpha=.07;x.fillStyle=G;for(let yy=2*u;yy<H;yy+=6*u)for(let xx=(Math.round(yy/(6*u))%2?3:0)*u+1.5*u;xx<W;xx+=6*u){x.beginPath();for(let k=0;k<10;k++){const r=k%2?.45*u:1.1*u,a=-Math.PI/2+k*Math.PI/5;x.lineTo(xx+r*Math.cos(a),yy+r*Math.sin(a))}x.closePath();x.fill()}x.restore();
+  x.strokeStyle=M;x.lineWidth=.5*u;rr(x,2.4*u,2.4*u,W-4.8*u,H-4.8*u,1*u);x.stroke();
+  x.strokeStyle=G;x.lineWidth=.18*u;rr(x,3.4*u,3.4*u,W-6.8*u,H-6.8*u,.6*u);x.stroke();
+  if(A.corner)for(const [cx,cy] of [[.6,.6],[94.4,.6],[.6,H/u-5.6],[94.4,H/u-5.6]])x.drawImage(A.corner,cx*u,cy*u,5*u,5*u);
+  if(A.logo)x.drawImage(A.logo,44*u,6*u,12*u,12*u);
+  x.direction='rtl';x.textAlign='center';x.textBaseline='alphabetic';const C=W/2;
+  let y=21.4*u;
+  if(s.term){x.font=F(700,1.6);x.fillStyle=G;x.fillText(s.term,C,y)}
+  y+=5.4*u;x.font=F(700,4.6);x.fillStyle=M;x.fillText('شهادة سفيرة الصدق',C,y);
+  y+=3.8*u;x.font=F(400,1.9);x.fillStyle=SOFT;x.fillText('تُمنح هذه الشهادة إلى الطالبة',C,y);
+  y+=6.2*u;x.font=F(700,5.4,'a');x.fillStyle=M;x.fillText(s.name,C,y);
+  const nw=Math.max(40*u,x.measureText(s.name).width+8*u);x.strokeStyle=G;x.lineWidth=.2*u;x.beginPath();x.moveTo(C-nw/2,y+1.7*u);x.lineTo(C+nw/2,y+1.7*u);x.stroke();
+  y+=4.8*u;if(s.cls){x.font=F(400,1.8);x.fillStyle=SOFT;x.fillText('الصف: '+s.cls,C,y)}
+  if(s.medals!=null){y+=3*u;x.font=F(700,1.8);x.fillStyle=M;const t='عدد أوسمتها في هذا الفصل: '+ar(s.medals),tw=x.measureText(t).width;x.fillText(t,C-1.4*u,y);if(A.medal)x.drawImage(A.medal,C+tw/2-1.1*u,y-2*u,2.4*u,2.4*u)}
+  y+=3.8*u;x.font=F(400,1.95);x.fillStyle=INK;for(const l of wrapLines(x,s.body,64*u)){x.fillText(l,C,y);y+=3.4*u}
+  y+=.8*u;x.font=F(400,2.3,'a');x.fillStyle=M;x.fillText('﴿يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَكُونُوا مَعَ الصَّادِقِينَ﴾',C,y);
+  // التواقيع
+  const cols=[['التاريخ',s.date]];if(s.teacher)cols.push(['المعلمة',s.teacher]);cols.push(['النائبة',s.dep]);cols.push(['مديرة المدرسة',s.pri]);
+  const L=10*u,R=W-10*u,cw=(R-L)/cols.length,fy=H-11.2*u;
+  cols.forEach(([lab,val],i)=>{const cx=R-cw*(i+.5);
+    x.strokeStyle='#D9CBB8';x.lineWidth=.12*u;x.beginPath();x.moveTo(cx-cw*.38,fy);x.lineTo(cx+cw*.38,fy);x.stroke();
+    x.font=F(400,1.35);x.fillStyle=SOFT;x.fillText(lab,cx,fy+2.2*u);
+    x.font=F(700,1.6);x.fillStyle=INK;x.fillText(val||' ',cx,fy+4.6*u)});
+}
+async function certPages(list){await certFonts();
+  const A={logo:await loadImg(LOGO),corner:await symImg('i-corner'),medal:await symImg('i-medal')};
+  const cv=document.createElement('canvas');cv.width=2480;cv.height=1754;cv.ctx=cv.getContext('2d');const out=[];
+  for(const s of list){await drawCert(cv,s,A);const b=await new Promise(r=>cv.toBlob(r,'image/jpeg',.9));out.push(new Uint8Array(await b.arrayBuffer()))}
+  return {jpgs:out,w:cv.width,h:cv.height}}
+function makePDF({jpgs,w,h}){
+  const enc=new TextEncoder(),parts=[],offs=[];let len=0;const push=x=>{const b=typeof x==='string'?enc.encode(x):x;parts.push(b);len+=b.length};
+  const PW=841.89,PH=595.28,n=jpgs.length,obj=(i,body)=>{offs[i]=len;push(`${i} 0 obj\n`);body();push('\nendobj\n')};
+  push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+  const kids=[];for(let k=0;k<n;k++)kids.push(`${3+k*3} 0 R`);
+  obj(1,()=>push('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2,()=>push(`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${n} >>`));
+  jpgs.forEach((j,k)=>{const p=3+k*3,cs=`q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
+    obj(p,()=>push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${p+2} 0 R >> >> /Contents ${p+1} 0 R >>`));
+    obj(p+1,()=>push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+    obj(p+2,()=>{push(`<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${j.length} >>\nstream\n`);push(j);push('\nendstream')})});
+  const total=3+n*3,xo=len;let x=`xref\n0 ${total}\n0000000000 65535 f \n`;for(let i=1;i<total;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  push(x+`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xo}\n%%EOF`);
+  return new Blob(parts,{type:'application/pdf'})}
+async function certPDF(list,fname){
+  const win=window.open('','_blank');if(win)try{win.document.write('<p dir="rtl" style="font-family:sans-serif;padding:24px">جارٍ تجهيز الشهادة…</p>')}catch(_){}
+  toast(list.length>1?`جارٍ تجهيز ${ar(list.length)} شهادة…`:'جارٍ تجهيز الشهادة…');
+  try{const blob=makePDF(await certPages(list)),url=URL.createObjectURL(blob);
+    if(win){win.location.href=url}else{const a=document.createElement('a');a.href=url;a.download=(fname||'شهادة-سفيرة-الصدق')+'.pdf';document.body.appendChild(a);a.click();a.remove()}
+    setTimeout(()=>URL.revokeObjectURL(url),120000)}
+  catch(e){if(win)win.close();toast('تعذّر تجهيز الشهادة')}}
+function certData(name,cls,at,o){o=o||{};const n=certNames();
+  return {name,cls,term:o.term||'',medals:o.medals??null,teacher:o.teacher||'',dep:n.dep,pri:n.pri,
+    date:new Date(at).toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'}),
+    body:o.teacher?'تقديرًا لمشاركتها في مبادرة «سفيرات الصدق»، وتمثّلها قيمة الصدق قولًا وعملًا، ونشرها أثره بين زميلاتها.':'تقديرًا لإتمامها رحلة «سفيرات الصدق»؛ إذ اكتشفت معنى الصدق، وتأمّلت ذاتها، والتزمت بتحدّي يومٍ كامل من الصدق، ونشرت أثره بين زميلاتها.'}}
+
 const CERT_PAGE='A4 portrait;margin:24mm 0 0';
 function certHTML(name,cls,at,o){o=o||{};
   const d=new Date(at).toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
@@ -1482,7 +1574,7 @@ function certHTML(name,cls,at,o){o=o||{};
     <div class="nm">${esc(name)}</div>${cls?`<div class="cl">الصف: ${esc(cls)}</div>`:''}${o.medals!=null?`<div class="md">${icon('medal')}عدد أوسمتها في هذا الفصل: ${ar(o.medals)}</div>`:''}
     <div class="body">${o.teacher?'تقديرًا لمشاركتها في مبادرة «سفيرات الصدق»، وتمثّلها قيمة الصدق قولًا وعملًا، ونشرها أثره بين زميلاتها.':'تقديرًا لإتمامها رحلة «سفيرات الصدق»؛ إذ اكتشفت معنى الصدق، وتأمّلت ذاتها، والتزمت بتحدّي يومٍ كامل من الصدق، ونشرت أثره بين زميلاتها.'}</div>
     <div class="ay">﴿يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَكُونُوا مَعَ الصَّادِقِينَ﴾</div>
-    <div class="foot"><div>التاريخ: ${d}</div><div>${o.teacher?'المعلمة: '+esc(o.teacher):'المعلمة'}</div></div>
+    <div class="foot">${(()=>{const n=certNames(),c=[['التاريخ',d]];if(o.teacher)c.push(['المعلمة',o.teacher]);c.push(['النائبة',n.dep],['مديرة المدرسة',n.pri]);return c.map(([l,v])=>`<div><span>${l}</span><b>${esc(v||'')}</b></div>`).join('')})()}</div>
    </div></div></div>`;
 }
 function renderCert(){
@@ -1502,7 +1594,7 @@ function renderCert(){
   $('certBox').innerHTML=`<div class="locked">${icon('medal')}<h2 style="margin-top:8px">مبارك! أكملتِ رحلتك</h2><p class="sub">أنهيتِ المحطات الخمس، وستصدر معلمتك شهادتك قريبًا. ستظهر هنا فور إصدارها.</p>
     ${DB.phase==='post'&&!j.post?`<div class="row" style="margin-top:14px;justify-content:center"><button class="btn gold" onclick="go('survey')">${icon('survey')}أجيبي الاستبانة البعدية</button></div>`:''}</div>`;
 }
-function printCert(){const j=J();$('printRoot').innerHTML=certHTML(j.cert.name,ME.cls,j.cert.at);setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
+function printCert(){const j=J();certPDF([certData(j.cert.name,ME.cls,j.cert.at)],'شهادة-'+j.cert.name)}
 
 /* ===== لوحة المعلمة ===== */
 let tTab='login';
@@ -1540,7 +1632,7 @@ async function issueCertFor(id){const s=DB.students.find(x=>x.id===id);if(!s)ret
   if(done<5&&!confirm(`أنجزت «${s.name}» ${ar(done)} من ${ar(5)} محطات فقط. هل تريدين إصدار الشهادة لها؟`))return;
   const name=(prompt('الاسم كما يظهر في الشهادة:',s.name)||'').trim();if(name.length<2)return;
   try{await API.teacherCert(s,name)}catch(_){return}await refreshAll();toast('صدرت الشهادة، وستظهر للطالبة في حسابها')}
-function printCertFor(id){const c=DB.certs.find(x=>x.student_id===id||x.id===id);if(!c)return;$('printRoot').innerHTML=certHTML(c.name,c.cls,c.at);setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
+function printCertFor(id){const c=DB.certs.find(x=>x.student_id===id||x.id===id);if(!c)return;certPDF([certData(c.name,c.cls,c.at)],'شهادة-'+c.name)}
 async function delStudent(id){const s=DB.students.find(x=>x.id===id);if(!confirm(`حذف حساب «${s?s.name:''}» وكل مشاركاتها نهائيًا؟`))return;try{await API.delStudent(id)}catch(_){return}await refreshAll();toast('تم حذف الحساب')}
 async function resetPin(id){const s=DB.students.find(x=>x.id===id);const p=(prompt(`الرمز السري الجديد لـ«${s?s.name:''}» (٤ أرقام):`)||'').trim().replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
   if(!p)return;if(!/^\d{4}$/.test(p))return toast('الرمز ٤ أرقام');
@@ -1753,10 +1845,10 @@ const medalsOf=id=>DB.stories.filter(s=>s.student_id===id&&s.status==='ok'&&s.me
 function certTeacher(){const t=$('certT').value.trim();if(!t){toast('اكتبي اسمك قبل الطباعة');$('certT').focus();return null}LS.set('sidq-cert-teacher',t);return t}
 function certOpts(s,t){const T=TERMS[(DB.term||1)-1];return {teacher:t,medals:medalsOf(s.id),term:T[0]+' · '+T[1]}}
 function printOneCert(){const t=certTeacher();if(!t)return;const s=DB.students.find(x=>x.id===$('certSel').value);if(!s)return toast('اختاري السفيرة');
-  $('printRoot').innerHTML=certHTML(s.name,s.cls,Date.now(),certOpts(s,t));setPage(CERT_PAGE);setTimeout(()=>window.print(),400)}
+  certPDF([certData(s.name,s.cls,Date.now(),certOpts(s,t))],'شهادة-'+s.name)}
 function printAllCerts(){const t=certTeacher();if(!t)return;const list=vis(DB.students).slice().sort(byCls);if(!list.length)return;
   if(list.length>5&&!confirm(`طباعة ${ar(list.length)} شهادة؟`))return;
-  $('printRoot').innerHTML=list.map(s=>certHTML(s.name,s.cls,Date.now(),certOpts(s,t))).join('');setPage(CERT_PAGE);setTimeout(()=>window.print(),600)}
+  certPDF(list.map(s=>certData(s.name,s.cls,Date.now(),certOpts(s,t))),'شهادات-سفيرات-الصدق')}
 
 /* ===== الحقيبة ===== */
 const KSEC=[['morning','الطابور الصباحي','mic'],['break','نشاط الاستراحة','leaf'],['school','الأنشطة المدرسية','school'],['reserve','حصص الاحتياط','survey'],['library','الحصة المكتبية','book'],['parents','رسائل أولياء الأمور','letter']];
@@ -1778,13 +1870,14 @@ function renderKit(){
      ${it.body?`<div class="kb">${esc(it.body).split('\n').map(l=>`<p>${l}</p>`).join('')}</div>`:''}
      <div class="row" style="margin-top:8px">
       ${it.body?`<button class="btn sm alt" onclick="copyKit('${it.id}')">نسخ</button>`:''}
-      ${k==='parents'?`<a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(parentMsg(it))}">${icon('chat')}إرسال بالواتساب</a>`:''}
+      ${k==='parents'?`<a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${PARENTS_WA}?text=${encodeURIComponent(parentMsg(it))}">${icon('chat')}إرسال بالواتساب</a>`:''}
       ${it.link?`<a class="btn sm ghost" target="_blank" rel="noopener" href="${esc(it.link)}">${isVideo(it.link)?'مشاهدة الفيديو':'فتح الملف'}</a>`:''}
       <button class="btn sm ghost" onclick="printKit('${it.id}')">${icon('print')}طباعة</button>
       ${(it.created_by===DB.me.id||DB.me.is_admin)?`<button class="btn sm ghost" onclick="delKit('${it.id}')">حذف</button>`:''}
      </div></div>`).join('')}</div>`}).join('');
   $('kitBody').innerHTML=form+cards;
 }
+const PARENTS_WA='97450754608'; // رقم واتساب أولياء الأمور (قطر)
 const parentMsg=it=>'ولي أمر الطالبة الكريم،\n'+(it.body||it.title)+(it.link?'\n'+it.link:'')+'\nمبادرة سفيرات الصدق';
 async function addKit(btn){const t=$('kT').value.trim(),b=$('kB').value.trim(),l=$('kL').value.trim();
   if(t.length<2)return toast('اكتبي العنوان');if(l&&!/^https?:\/\//i.test(l))return toast('الرابط يبدأ بـ https://');
@@ -1952,10 +2045,10 @@ async function tAct(id,a){const t=DB.teachers.find(x=>x.id===id);if(a==='delete'
   try{await API.teacherAct(id,a)}catch(e){if(e.code)toast(ERR[e.code]||'تعذّرت العملية');return}await refreshAll();toast('تم')}
 
 /* ===== الإعدادات ===== */
-const CFG0={school:'رفيدة بنت كعب الإعدادية للبنات',sup:'',dep:'',pri:'',wall:true,tpub:true,logo:'',terms:[
+const CFG0={school:'رفيدة بنت كعب الإعدادية للبنات',sup:'',dep:'بينه النابت',pri:'هيا الهاجري',wall:true,tpub:true,logo:'',terms:[
  {value:'الصدق',weeks:8,init:'سفيرات الصدق',slogan:'الصدق ممارسة نعيشها كل يوم، لا نشاط ننساه',ayah:'لِيَجْزِيَ اللَّهُ الصَّادِقِينَ بِصِدْقِهِمْ',ref:'الأحزاب: 24'},
  {value:'الوفاء',weeks:8,init:'سفيرات الوفاء',slogan:'',ayah:'وَأَوْفُوا بِالْعَهْدِ إِنَّ الْعَهْدَ كَانَ مَسْئُولًا',ref:'الإسراء: 34'}]};
-const cfgV=()=>{const c=DB.cfg||{},o={};Object.keys(c).forEach(k=>{if(c[k]!==null&&c[k]!==undefined)o[k]=c[k]});return {...CFG0,...o,terms:CFG0.terms.map((t,i)=>({...t,...((c.terms||[])[i]||{})}))}};
+const cfgV=()=>{const c=DB.cfg||{},o={};Object.keys(c).forEach(k=>{if(c[k]!==null&&c[k]!==undefined&&!(c[k]===''&&CFG0[k]))o[k]=c[k]});return {...CFG0,...o,terms:CFG0.terms.map((t,i)=>({...t,...((c.terms||[])[i]||{})}))}};
 const schoolName=()=>cfgV().school||CFG0.school;
 const clsList=()=>(DB.classes||DEF_CLASSES).split(/[،,\n]+/).map(x=>x.trim()).filter(Boolean);
 function applyCfg(){window._L0=window._L0||LOGO;const l=cfgV().logo;LOGO=l||window._L0;const h=$('heroLogo');if(h)h.src=LOGO}
@@ -2168,10 +2261,11 @@ const SELF=['هل أقول «لا أعرف» عندما لا أعرف؟','هل �
 $('selfCheck').innerHTML=SELF.map((s,i)=>`<li><label><input type="checkbox" ${LS.get('sidq-self',[])[i]?'checked':''} onchange="const d=LS.get('sidq-self',[]);d[${i}]=this.checked;LS.set('sidq-self',d)">${s}</label></li>`).join('');
 
 /* ===== البدء ===== */
+HERO_SUB=$('heroSub').textContent;
 renderTAuth();
 $('heroLogo').src=LOGO;
 renderAuth();renderH24();renderSpread();renderMore();
-const chkHash=()=>{if(location.hash==='#teacher')go('teacher');else if(curView==='teacher'&&!isTeacher)go(ME?'home':'auth')};
+const chkHash=()=>{if(location.hash==='#teacher')go('teacher');else if(isSolo())go(ME?'survey':'auth');else if(curView==='teacher'&&!isTeacher)go(ME?'home':'auth')};
 window.addEventListener('hashchange',chkHash);
 go(location.hash==='#teacher'?'teacher':'auth');
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAll().catch(()=>{})});
