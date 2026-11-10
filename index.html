@@ -163,12 +163,12 @@ body.gate .hero{padding-bottom:70px}
 .rep-h h2 .ic{width:34px;height:34px}
 .rep-h p{color:var(--gold-2);font-size:.9rem}
 .rep-h img{width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--gold-2);flex-shrink:0}
-.rep-k{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.rep-k{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
 .rep-k div{padding:16px;text-align:center;border-inline-start:1px solid var(--line)}
-.rep-k div:first-child{border-inline-start:0}
+.rep-k div:nth-child(3n+1){border-inline-start:0}.rep-k div:nth-child(n+4){border-top:1px solid var(--line)}
 .rep-k b{display:block;font-size:1.8rem;color:var(--maroon);line-height:1.3}
 .rep-k span{color:var(--ink-soft);font-size:.88rem}
-@media (max-width:640px){.rep-k{grid-template-columns:repeat(2,1fr)}.rep-k div:nth-child(3){border-inline-start:0}.rep-k div:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:640px){.rep-k{grid-template-columns:repeat(2,1fr)}.rep-k div{border-inline-start:1px solid var(--line)!important}.rep-k div:nth-child(2n+1){border-inline-start:0!important}.rep-k div:nth-child(n+3){border-top:1px solid var(--line)}}
 .rep-s{padding:16px;border-bottom:1px solid var(--line)}
 .rep-s h3{margin-bottom:6px}
 .rep-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:10px}
@@ -222,6 +222,20 @@ body.gate .hero{padding-bottom:70px}
 .print-root .rep-cls{display:grid;grid-template-columns:repeat(3,1fr);column-gap:18px;grid-auto-flow:column;grid-template-rows:repeat(10,auto)}
 .print-root .rep-cls .bar-row{grid-template-columns:62px 1fr 24px;gap:6px}
 .print-root .rep-s,.print-root .rep-sign{break-inside:avoid}
+.amb-ban{display:flex;align-items:center;gap:12px;background:var(--gold-soft);border-color:var(--gold)}
+.amb-ban .ic{width:40px;height:40px;flex:none}
+.pub-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--cream);border:1.5px dashed var(--gold);border-radius:14px;padding:10px 14px;margin:14px 0 -6px;font-weight:600}
+.pub-bar.on{border-style:solid;border-color:var(--ok);background:#F1F8F3}
+.pub-bar span{flex:1;min-width:150px}
+.pub-bar .ic{width:22px;height:22px}
+.ch-locked{display:flex;align-items:center;gap:12px;opacity:.85}
+.ch-locked .ic{width:34px;height:34px;flex:none}
+.pub-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);background:var(--cream);border-radius:14px;padding:10px 12px;margin-top:8px}
+.amb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.amb-cell{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--cream);display:flex;flex-direction:column;font-size:.9rem}
+.amb-cell b{color:var(--maroon)}
+.amb-cell.ok{border-color:var(--ok);background:#F1F8F3}
+.amb-cell.over{border-color:var(--gold)}
 .sv-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .sv-btn .sec-title{flex:1;min-width:220px}
 .sv-btn a.btn{text-decoration:none}
@@ -447,6 +461,7 @@ textarea{min-height:120px;resize:vertical}
 
 /* ===== لوحة المعلمة ===== */
 .tk{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+@media (max-width:640px){.tk{grid-template-columns:1fr 1fr}.tk>div:last-child:nth-child(odd){grid-column:1/-1}}
 .tk div{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px}
 .tk div .ic{width:40px;height:40px;flex:none;background:var(--paper);border-radius:12px;padding:5px}
 .tk div p{margin:0}
@@ -544,7 +559,7 @@ textarea{min-height:120px;resize:vertical}
   <section class="kpis" id="kpis" aria-label="أرقام المبادرة">
     <div class="kpi"><div class="bub b1"><svg class="ic"><use href="#i-crown"/></svg></div><div><b id="k1">0</b><span>سفيرة</span></div></div>
     <div class="kpi"><div class="bub b2"><svg class="ic"><use href="#i-wall"/></svg></div><div><b id="k2">0</b><span>موقف معتمد</span></div></div>
-    <div class="kpi"><div class="bub b3"><svg class="ic"><use href="#i-school"/></svg></div><div><b id="k3">0</b><span>فصول مشاركة</span></div></div>
+    <div class="kpi"><div class="bub b3"><svg class="ic"><use href="#i-school"/></svg></div><div><b id="k3">0</b><span>طالبة مشاركة</span></div></div>
     <div class="kpi"><div class="bub b4"><svg class="ic"><use href="#i-medal"/></svg></div><div><b id="k4">0</b><span>وسام</span></div></div>
   </section>
 
@@ -774,12 +789,6 @@ textarea{min-height:120px;resize:vertical}
         <h2>السفيرات</h2>
         <p class="sub" id="ambSub"></p>
       </div>
-      <div class="panel">
-        <h2>إضافة سفيرات</h2>
-        <label for="ambCls">الفصل</label><select id="ambCls"></select>
-        <label for="ambNames">الأسماء (اسم في كل سطر)</label><textarea id="ambNames" placeholder="مريم أحمد&#10;نورة سالم" style="min-height:90px"></textarea>
-        <div class="row" style="margin-top:12px"><button class="btn" type="button" onclick="addAmb()">إضافة</button><button class="btn alt" type="button" onclick="printAmbCards()"><svg class="ic"><use href="#i-print"/></svg>طباعة بطاقات الرموز</button></div>
-      </div>
       <div id="ambRoster"></div>
       <div class="panel">
         <h2>تقدّم الطالبات المسجّلات</h2>
@@ -898,6 +907,12 @@ textarea{min-height:120px;resize:vertical}
           <input type="hidden" id="cWeek">
           <div class="row" style="margin-top:14px"><button class="btn" id="pubBtn" onclick="publishCh(this)"><svg class="ic"><use href="#i-target"/></svg>نشر تحدي جديد</button></div>
         </div>
+        <div class="panel" id="pubPanel">
+          <div class="sec-title"><svg class="ic"><use href="#i-send"/></svg><div><h2>نشر التحديات للطالبات</h2><p class="sub">السفيرات يشفن كل التحديات. والطالبة يظهر لها التحدي بعد ما تنشرينه أنتِ أو سفيرة فصلها.</p></div></div>
+          <label for="pubCls">الفصل</label><select id="pubCls" onchange="renderPubPanel()"></select>
+          <p class="hint" id="pubAmb" style="margin-top:6px"></p>
+          <div id="pubList"></div>
+        </div>
         <div>
           <h2 class="v-title" id="wkHead" style="margin-top:22px">أسابيع الفصل الأول: الخطة والقسم المسؤول والأدلة</h2>
           <p class="sub">أسبوع لكل محور من ملف الحقيبة وملف المربي، مع رموز المصفوفة. «استخدمي» تعبّي التحدي فوق. لكل أسبوع قسم مسؤول ينفذه كاملًا (الطابور، الاستراحة، حصص الاحتياط...)، ويرفع <b>أدلته</b> من صور وملفات.</p>
@@ -998,7 +1013,7 @@ const genCode=()=>Array.from({length:6},()=>'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Ma
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const norm=t=>String(t||'').trim().replace(/\s+/g,' ').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
 const ERR={wall_closed:'الكتابة على الحائط مغلقة حاليًا',bad_name:'اكتبي اسمك الثلاثي',bad_class:'اختاري فصلك',bad_pin:'الرمز السري ٤ أرقام',exists:'هذا الاسم مسجّل في هذا الفصل. ادخلي من «لدي حساب»، أو أضيفي اسم الجد',
-  bad_login:'الاسم أو الفصل أو الرمز غير صحيح',bad_tcode:'رمز المعلمة غير صحيح',bad_owner:'الرمز غير صحيح',not_my_class:'هذا الموقف ليس من فصولك',locked:'محاولات كثيرة خاطئة. حاولي بعد ربع ساعة، أو اطلبي من معلمتك إعادة الرمز',bad_token:'انتهت جلستك، ادخلي مرة أخرى',
+  bad_login:'الاسم أو الفصل أو الرمز غير صحيح',bad_tcode:'رمز المعلمة غير صحيح',bad_owner:'الرمز غير صحيح',not_my_class:'هذا ليس من فصولك',not_amb:'هذه الميزة للسفيرات',locked:'محاولات كثيرة خاطئة. حاولي بعد ربع ساعة، أو اطلبي من معلمتك إعادة الرمز',bad_token:'انتهت جلستك، ادخلي مرة أخرى',
   bad_text:'اكتبي نصًا أطول قليلًا',closed:'الاستبانة مغلقة الآن',bad_link:'الرابط يبدأ بـ https://',bad_title:'اكتبي العنوان',self:'لا يمكن تطبيق هذا على حسابك',bad_code:'رمز المدرسة غير صحيح. اطلبيه من إدارة المبادرة',bad_pass:'كلمة المرور ٦ أحرف أو أرقام على الأقل',t_exists:'هذا الاسم مسجّل. ادخلي من «لدي حساب»',forbidden:'هذه العملية للمعلمة فقط',too_big:'الملف كبير جدًا',not_found:'لم يُعثر على الملف',bad_week:'رقم الأسبوع غير صحيح',bad_body:'اكتبي وصف التحدي'};
 function fail(e){console.error(e);toast(ERR[e&&e.code]||'تعذّر الاتصال، تأكدي من الإنترنت وحاولي مجددًا');throw e}
 const err=c=>{const e=new Error(c);e.code=c;return e};
@@ -1028,7 +1043,7 @@ const Lget=()=>Object.assign({stories:[],challenge:{text:'',open:false},classes:
 const Lset=d=>LS.set(LKEY,d);
 const sj=s=>{const c=Lget().certs.filter(c=>c.student_id===s.id).sort((a,b)=>b.at-a.at)[0];return {token:s.token,id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},cert:c?{name:c.name,at:c.at}:null}};
 function localStats(d){const ok=d.stories.filter(s=>s.status==='ok');
-  return {ambassadors:new Set(ok.map(s=>s.student_id||norm(s.name)+'|'+s.cls)).size,approved:ok.length,classes:new Set(d.students.map(s=>s.cls)).size,certs:d.certs.length}}
+  return {ambassadors:d.students.filter(s=>s.is_amb).length,students:d.students.length,approved:ok.length,classes:new Set(d.students.map(s=>s.cls)).size,certs:d.certs.length}}
 async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)fail(error);if(data&&data.error)throw err(data.error);return data}
 
 const API={
@@ -1139,13 +1154,13 @@ const API={
   },
   async teacherData(){
     if(!sb){const d=Lget(),me=(d.teachers||[]).find(t=>t.token===TT)||{};const tn=id=>((d.teachers||[]).find(t=>t.id===id)||{}).name;
-      return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs,students:d.students.map(s=>({id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},created:s.created,last:s.last})),stories:d.stories,
+      return {surveys:d.surveys.map(s=>({phase:'pre',...s})),certs:d.certs,students:d.students.map(s=>({id:s.id,name:s.name,cls:s.cls,progress:s.progress||{},is_amb:!!s.is_amb,created:s.created,last:s.last})),pubs:d.pubs||[],stories:d.stories,
         kit:(d.kit||[]).map(k=>({...k,by:tn(k.created_by)})).sort((a,b)=>b.at-a.at),obs:d.obs||[],teachers:(d.teachers||[]).filter(t=>!t.hidden||t.token===TT).map(t=>({id:t.id,name:t.name,is_admin:!!t.is_admin,classes:t.classes||'',code:me.is_admin?t.code||'':'',last_seen:t.last||Date.now()})),term:d.term||1,me:{id:me.id,is_admin:!!me.is_admin},school_code:me.is_admin?(d.code||'2468'):'',wdept:d.wdept||{},ev:(d.ev||[]).map(({data,...e})=>({...e,by:tn(e.created_by)}))}}
     const r=await rpc('sidq_t_data',{p_tt:TT});
     return {stories:r.stories.map(x=>({id:x.id,name:x.name,cls:x.cls||'',text:x.text,type:x.type||'',status:x.status,medal:!!x.medal,student_id:x.student_id,at:ms(x.created_at)})),
       surveys:r.surveys.map(x=>({cls:x.cls,ans:x.ans,phase:x.phase||'pre',student_id:x.student_id,at:ms(x.created_at)})),
       certs:r.certs.map(x=>({id:x.id,name:x.name,cls:x.cls||'',student_id:x.student_id,at:ms(x.created_at)})),
-      students:r.students.map(x=>({id:x.id,name:x.name,cls:x.cls,progress:x.progress||{},created:ms(x.created_at),last:ms(x.last_seen)})),
+      students:r.students.map(x=>({id:x.id,name:x.name,cls:x.cls,progress:x.progress||{},is_amb:!!x.is_amb,created:ms(x.created_at),last:ms(x.last_seen)})),pubs:r.pubs||[],
       kit:r.kit.map(x=>({...x,body:x.body||'',at:ms(x.created_at)})),obs:r.obs,teachers:r.teachers.map(x=>({...x,last_seen:ms(x.last_seen)})),me:r.me,school_code:r.school_code,term:r.term,
       wdept:Object.fromEntries((r.weeks||[]).map(w=>[w.week,w.dept])),ev:(r.evidence||[]).map(x=>({...x,at:ms(x.created_at)}))};
   },
@@ -1178,6 +1193,22 @@ const API={
   async tCodeLogin(code){
     if(!sb){const t=(Lget().teachers||[]).find(t=>t.code&&t.code===code);if(!t)throw err('bad_tcode');return {token:t.token,name:t.name,id:t.id,is_admin:!!t.is_admin}}
     return rpc('sidq_t_code_login',{p_code:code});
+  },
+  async myPub(tk){
+    if(!sb){const d=Lget(),s=d.students.find(x=>x.token===tk);if(!s)throw err('bad_token');return {amb:!!s.is_amb,cls:s.cls,pub:(d.pubs||[]).filter(p=>p.cls===s.cls)}}
+    return rpc('sidq_my_pub',{p_token:tk});
+  },
+  async ambPublish(tk,ch,on){
+    if(!sb){const d=Lget(),s=d.students.find(x=>x.token===tk);if(!s||!s.is_amb)throw err('not_amb');d.pubs=(d.pubs||[]).filter(p=>!(p.cls===s.cls&&p.ch===ch));if(on)d.pubs.push({cls:s.cls,ch,role:'amb',by:s.name,at:Date.now()});Lset(d);return}
+    await rpc('sidq_amb_publish',{p_token:tk,p_ch:ch,p_on:!!on});
+  },
+  async tChPublish(cls,ch,on){
+    if(!sb){const d=Lget(),me=(d.teachers||[]).find(t=>t.token===TT)||{};d.pubs=(d.pubs||[]).filter(p=>!(p.cls===cls&&p.ch===ch));if(on)d.pubs.push({cls,ch,role:'teacher',by:me.name||'',at:Date.now()});Lset(d);return}
+    await rpc('sidq_t_ch_publish',{p_tt:TT,p_cls:cls,p_ch:ch,p_on:!!on});
+  },
+  async tSetAmb(id,on){
+    if(!sb){const d=Lget(),s=d.students.find(x=>x.id===id);if(s)s.is_amb=!!on;Lset(d);return}
+    await rpc('sidq_t_set_amb',{p_tt:TT,p_id:id,p_on:!!on});
   },
   async tClasses(id,cls){
     if(!sb){const d=Lget(),t=(d.teachers||[]).find(t=>t.id===id);if(t)t.classes=cls;Lset(d);return}
@@ -1212,8 +1243,9 @@ async function refreshAll(){
   const d=await API.load();
   DB.stories=d.stories;DB.challenge=d.challenge;DB.classes=d.classes;
   DB.stats=d.stats||{ambassadors:0,approved:0,classes:0,certs:0};DB.pub=d.pub||{};DB.phase=d.phase;DB.weeks=d.weeks;DB.start=d.start;
-  if(isTeacher){try{const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students;if(t.stories)DB.stories=t.stories;DB.kit=t.kit;DB.obs=t.obs;DB.teachers=t.teachers;DB.me=t.me;DB.term=+t.term||1;DB.schoolCode=t.school_code||'';DB.wdept=t.wdept||{};DB.ev=t.ev||[]}catch(e){if(e.code==='bad_token')teacherExpired()}}
+  if(isTeacher){try{const t=await API.teacherData();DB.surveys=t.surveys;DB.certs=t.certs;DB.students=t.students;DB.pubs=t.pubs||[];if(t.stories)DB.stories=t.stories;DB.kit=t.kit;DB.obs=t.obs;DB.teachers=t.teachers;DB.me=t.me;DB.term=+t.term||1;DB.schoolCode=t.school_code||'';DB.wdept=t.wdept||{};DB.ev=t.ev||[]}catch(e){if(e.code==='bad_token')teacherExpired()}}
   if(isTeacher){try{const c=await API.cfgGet();DB.cfg=c.cfg||null;DB.amb=c.amb||[];applyCfg()}catch(_){}}
+  if(ME){try{DB.my=await API.myPub(ME.token)}catch(e){DB.my=null}}
   if(ME){try{MINE=await API.myStories(ME.token);const m=await API.me(ME.token);ME.cert=m.cert||null}catch(_){}}
   render();
 }
@@ -1277,7 +1309,7 @@ async function logoutStudent(){if(saveT)await saveP();ME=null;MINE=[];LS.del('si
 function forceLogout(){ME=null;LS.del('sidq-token');toast(ERR.bad_token);renderAuth();go('auth')}
 function renderWho(){
   const w=$('whoChip');
-  if(ME&&curView!=='teacher')w.innerHTML=`<span>${icon('crown')} ${esc(ME.name.split(' ')[0])} · ${esc(ME.cls)}</span><button onclick="logoutStudent()">خروج</button>`;
+  if(ME&&curView!=='teacher')w.innerHTML=`<span>${icon('crown')} ${esc(ME.name.split(' ')[0])} · ${esc(ME.cls)}${DB.my&&DB.my.amb?' · سفيرة':''}</span><button onclick="logoutStudent()">خروج</button>`;
   else if(isTeacher&&curView==='teacher')w.innerHTML=`<span>${icon('school')} ${esc(TNAME)}</span><button onclick="logout()">خروج</button>`;
   else w.innerHTML='';
   w.style.display=w.innerHTML?'':'none';
@@ -1289,7 +1321,7 @@ function noteHTML(s){
   <div class="who"><span>${esc(s.name)}${s.cls?' · '+esc(s.cls):''}</span><span>${date(s.at)}</span></div></article>`;
 }
 function render(){
-  const st=DB.stats||{};$('k1').textContent=st.ambassadors||0;$('k2').textContent=st.approved||0;$('k3').textContent=st.classes||0;$('k4').textContent=st.certs||0;
+  const st=DB.stats||{};$('k1').textContent=st.ambassadors||0;$('k2').textContent=st.approved||0;$('k3').textContent=st.students??st.classes??0;$('k4').textContent=st.certs||0;
   const ok=DB.stories.filter(s=>s.status==='ok').sort((a,b)=>b.at-a.at);
   const empty='<div class="empty">لا توجد مواقف معتمدة بعد. كوني أول من يكتب!</div>';
   $('latest').innerHTML=ok.length?ok.slice(0,6).map(noteHTML).join(''):empty;
@@ -1308,7 +1340,7 @@ function render(){
       <div class="row" style="margin-top:14px"><button class="btn" onclick="go('home');openForm()">اكتبي موقفك</button></div>`:'';
   $('mine').innerHTML=MINE.length?MINE.map(s=>`<div class="pend"><span class="tag">${esc(s.type||'موقف')}</span> <span class="${s.status==='ok'?'st-ok':'st-pend'}" style="font-size:.85rem">${s.status==='ok'?'معتمدة':'تنتظر الاعتماد'}</span><p style="white-space:pre-wrap;margin-top:4px">${esc(s.text)}</p><p class="hint">${date(s.at)}</p></div>`).join('')
     :'<div class="empty">لم ترسلي مشاركات بعد.</div>';
-  fillClassSelects();renderJourney();
+  fillClassSelects();renderJourney();applyGate();
   if(curView==='auth')renderAuthClasses();
   if(isTeacher)renderAdmin();
   if(curView==='survey'&&!document.querySelector('#sForm input:checked'))renderSurvey();
@@ -1681,7 +1713,7 @@ function goT(v){tView=v;LS.set('sidq-tview2',v);renderAdmin();const n=$('tnav');
 function renderAdmin(){
   const st=vis(DB.stories),ok=st.filter(s=>s.status==='ok').length,pend=st.length-ok;
   renderTerms();
-  $('tkpis').innerHTML=[[vis(DB.students).length,'سفيرة','crown'],[ok,'موقف معتمد','letter'],[pend,'بانتظار الاعتماد','survey'],[st.filter(s=>s.status==='ok'&&s.medal).length,'وسام في هذا الفصل','medal']]
+  $('tkpis').innerHTML=[[vis(DB.students).length,'طالبة مسجّلة','school'],[vis(DB.students).filter(s=>s.is_amb).length,'سفيرة','crown'],[ok,'موقف معتمد','letter'],[pend,'بانتظار الاعتماد','survey'],[st.filter(s=>s.status==='ok'&&s.medal).length,'وسام في هذا الفصل','medal']]
     .map(([n,l,ic])=>`<div>${icon(ic)}<p><b>${ar(n)}</b><span>${l}</span></p></div>`).join('');
   $('tnav').innerHTML=TV.map(([k,t,ic])=>`<button class="${k===tView?'on':''}" onclick="goT('${k}')">${icon(ic)}<span>${t}${k==='posts'&&pend?` <i class="dot">${pend}</i>`:''}</span></button>`).join('');
   document.querySelectorAll('.tview').forEach(x=>x.classList.toggle('on',x.id==='tv-'+tView));
@@ -1696,7 +1728,7 @@ function studentRow(s){
   const h=pr.h24s;
   const bars=(ans)=>AXES.map((a,ai)=>`<div class="stat" style="padding:4px 0"><div style="display:flex;justify-content:space-between;font-size:.88rem"><span>${a.n}</span><span class="hint">${ar(axisPct(ans,ai))}٪</span></div><div class="bar"><i style="width:${axisPct(ans,ai)}%"></i></div></div>`).join('');
   return `<details class="stu"><summary><div class="av">${esc(s.name[0]||'؟')}</div>
-   <div><div style="font-weight:700">${esc(s.name)} ${cert?`<span class="badge">${icon('medal')}سفيرة</span>`:''}</div><div class="hint">${esc(s.cls)} · آخر دخول ${date(s.last)}</div></div>
+   <div><div style="font-weight:700">${esc(s.name)} ${s.is_amb?`<span class="badge">${icon('crown')}سفيرة</span>`:''} ${cert?`<span class="badge">${icon('medal')}الشهادة</span>`:''}</div><div class="hint">${esc(s.cls)} · آخر دخول ${date(s.last)}</div></div>
    <div class="meta"><b style="color:var(--maroon)">${ar(n)}/${ar(5)}</b> محطات<br>${ar(items.length)} مشاركة</div></summary>
    <div class="entries">
     <div class="sgrid">${STEPS.map(t=>`<span class="${j[t.k]?'on':''}">${icon(j[t.k]?'check':t.ic)}${t.t}</span>`).join('')}</div>
@@ -1709,7 +1741,7 @@ function studentRow(s){
     ${cert?`<p class="hint">حصلت على شهادة سفيرة الصدق باسم «${esc(cert.name)}» في ${date(cert.at)}.</p>`:''}
     <h3 style="margin-top:10px">مشاركاتها</h3>
     ${items.map(entryHTML).join('')||'<p class="hint">لا توجد مشاركات مكتوبة.</p>'}
-    <div class="row" style="margin-top:12px">${cert?`<button class="btn sm gold" onclick="printCertFor('${s.id}')">${icon('print')}طباعة الشهادة</button><button class="btn sm ghost" onclick="delCert('${cert.id}')">سحب الشهادة</button>`:`<button class="btn sm gold" onclick="issueCertFor('${s.id}')">${icon('medal')}إصدار الشهادة</button>`}<button class="btn sm alt" onclick="resetPin('${s.id}')">${icon('lock')}تغيير الرمز السري</button><button class="btn sm no" onclick="delStudent('${s.id}')">حذف الحساب</button></div>
+    <div class="row" style="margin-top:12px">${s.is_amb?`<button class="btn sm ghost" onclick="setAmb('${s.id}',false)">إلغاء تعيين السفيرة</button>`:`<button class="btn sm gold" onclick="setAmb('${s.id}',true)">${icon('crown')}تعيين سفيرة</button>`}${cert?`<button class="btn sm gold" onclick="printCertFor('${s.id}')">${icon('print')}طباعة الشهادة</button><button class="btn sm ghost" onclick="delCert('${cert.id}')">سحب الشهادة</button>`:`<button class="btn sm gold" onclick="issueCertFor('${s.id}')">${icon('medal')}إصدار الشهادة</button>`}<button class="btn sm alt" onclick="resetPin('${s.id}')">${icon('lock')}تغيير الرمز السري</button><button class="btn sm no" onclick="delStudent('${s.id}')">حذف الحساب</button></div>
    </div></details>`;
 }
 function renderStudents(){renderAmb();
@@ -1821,7 +1853,7 @@ function reportHTML(pr){
   const obsN=new Set(DB.obs.map(o=>o.cls+o.phase)).size;
   return `<div class="rep">
    <div class="rep-h"><div><h2>${icon('chart')} تقرير أثر المبادرة · ${T[0]}: ${T[2]}</h2><p>${pr?'مدرسة '+schoolName()+' · '+new Date().toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'}):'المدرسة كاملة · يتحدّث تلقائيًا'}</p></div><img src="${LOGO}" alt=""></div>
-   <div class="rep-k"><div><b>${ar(ok.length)}</b><span>موقف معتمد</span></div><div><b>${ar(amb)}</b><span>سفيرة</span></div><div><b>${ar(medals.length)}</b><span>وسام ممنوح</span></div><div><b>${ar(wd)}/${ar(w.total)}</b><span>أسبوع منفّذ</span></div></div>
+   <div class="rep-k"><div><b>${ar(DB.students.length)}</b><span>طالبة مسجّلة</span></div><div><b>${ar(DB.students.filter(s=>s.is_amb).length)}</b><span>سفيرة</span></div><div><b>${ar(amb)}</b><span>طالبة شاركت بموقف</span></div><div><b>${ar(ok.length)}</b><span>موقف معتمد</span></div><div><b>${ar(medals.length)}</b><span>وسام ممنوح</span></div><div><b>${ar(wd)}/${ar(w.total)}</b><span>أسبوع منفّذ</span></div></div>
    <div class="rep-s"><h3>القياس القبلي والبعدي</h3>
     ${DB.surveys.length?`<div class="legend"><span><i class="m"></i>القبلي (${ar(pre.length)})</span><span><i></i>البعدي (${ar(post.length)})</span></div>`+AXES.map((a,ai)=>`<div class="stat"><div style="display:flex;justify-content:space-between"><span>${a.n}</span><span class="hint">${ar(avg(pre,ai))}٪ ← ${ar(avg(post,ai))}٪ ${post.length&&pre.length?delta(avg(pre,ai),avg(post,ai)):''}</span></div><div class="bar"><i style="width:${avg(pre,ai)}%"></i></div><div class="bar g"><i style="width:${avg(post,ai)}%"></i></div></div>`).join(''):'<p class="hint">لم تُجمع إجابات الاستبانة بعد (من تبويب «قياس الأثر»).</p>'}</div>
    ${obsN?`<div class="rep-s"><h3>ملاحظة المعلمات لفصولهن (من ١ إلى ٥)</h3>${IND.map((t,i)=>{const a=obsAvg('pre',i),b=obsAvg('post',i);return `<div class="stat"><div style="display:flex;justify-content:space-between"><span>${t}</span><span class="hint">${a?ar(a.toFixed(1)):'—'} ← ${b?ar(b.toFixed(1)):'—'}</span></div><div class="bar"><i style="width:${a*20}%"></i></div><div class="bar g"><i style="width:${b*20}%"></i></div></div>`}).join('')}</div>`:''}
@@ -1917,7 +1949,7 @@ const WEEKS=[
  {t:'الصدق في زمن الصورة',c:'إ-مه2 · إ-س2',b:'السؤال لم يعد: «هل قلتُ كذبة؟» بل: «هل صنعتُ لدى الآخرين تصورًا غير حقيقي؟»\nالصدق الرقمي: التحقق قبل إعادة النشر، ونسبة المحتوى إلى صاحبه، وعدم تقديم نتائج الذكاء الاصطناعي على أنها جهدي، ورفض الصورة الزائفة عن النفس.\nالتحدي: لا أعيد إرسال خبر قبل التحقق منه، وأنسب كل محتوى لصاحبه.'},
  {t:'الثقة | ماذا يصنع الصدق؟',c:'إ-أ1 · إ-أ2 · إ-أ3',b:'الثقة ثمرة تتراكم مع تكرار المواقف الصادقة: «الثقة تُبنى ببطء... وقد تُهدم بموقف واحد».\nالصدق يبني: الثقة، والشجاعة، والمسؤولية، والنزاهة، والاتساق.\nالتحدي: موقف صرتِ فيه موثوقة، وكلمة لشخص تثقين بصدقه، وتشجيع زميلة على قول الحقيقة.'}];
 const paras=t=>esc(t||'').split('\n').map(l=>`<p>${l}</p>`).join('');
-function renderWeek(){
+function renderWeek(){renderPubPanel();
   {const no=!DB.me.is_admin&&!cfgV().tpub,pb=$('pubBtn');if(pb){pb.disabled=no;let h=$('pubHint');if(!h){h=document.createElement('p');h.id='pubHint';h.className='hint';h.style.marginTop='6px';pb.parentElement.after(h)}h.textContent=no?'نشر التحدي للمشرفة فقط حاليًا (من الإعدادات).':''}}
   $('wkTitle').textContent='تحدي الأسبوع · '+termLbl();$('wkHead').textContent='أسابيع '+TERMS[(DB.term||1)-1][0]+': الخطة والقسم المسؤول والأدلة';
   const c=DB.challenge,n=Math.max(WEEKS.length,DB.weeks||8);
@@ -2094,20 +2126,54 @@ async function saveCfg(){
 function logoPick(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,256/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);setLogo(cv.toDataURL('image/png'))};im.src=r.result};r.readAsDataURL(f);inp.value=''}
 async function setLogo(u){const c={...cfgV(),logo:u};try{await API.cfgSave(c)}catch(e){if(e.code)toast(ERR[e.code]||'تعذّر الحفظ (للمشرفة فقط)');return}DB.cfg=c;applyCfg();renderSettings();toast(u?'تم حفظ الشعار':'تم حذف الشعار')}
 /* ===== سجل السفيرات ===== */
+/* ===== نشر التحديات للفصول ===== */
+const CHS=[
+  {k:()=>'w'+(DB.challenge.week||0),el:'chBox',t:()=>'تحدي الأسبوع'+(DB.challenge.week?' '+ar(DB.challenge.week):''),on:()=>!!(DB.challenge.open&&DB.challenge.text)},
+  {k:()=>'h24',el:'h24',t:()=>'تحدي الصدق ٢٤ ساعة',on:()=>true},
+  {k:()=>'spread',el:'spread',t:()=>'تحدي انشري الصدق',on:()=>true},
+  {k:()=>'more',el:'more',t:()=>'التحديات الإضافية',on:()=>true}];
+const chPubBy=(k)=>((DB.my&&DB.my.pub)||[]).find(p=>p.ch===k);
+function applyGate(){
+  const vch=$('v-ch');if(!vch)return;
+  let ban=$('ambBanner');if(!ban){ban=document.createElement('div');ban.id='ambBanner';vch.prepend(ban)}
+  const gate=!!(ME&&DB.my),amb=gate&&DB.my.amb;
+  ban.innerHTML=amb?`<div class="panel amb-ban">${icon('crown')}<div><b>أنتِ سفيرة فصل ${esc(ME.cls)}</b><p class="hint">تشوفين كل التحديات قبل زميلاتك. انشري التحدي لفصلك، فيظهر لهن ويشاركن فيه.</p></div></div>`:'';
+  CHS.forEach(c=>{const el=$(c.el);if(!el)return;let lk=$('lk-'+c.el);if(!lk){lk=document.createElement('div');lk.id='lk-'+c.el;el.before(lk)}
+    if(!gate||!c.on()){lk.innerHTML='';if(c.el!=='chBox')el.style.display='';return}
+    const p=chPubBy(c.k());
+    if(amb){el.style.display='';
+      lk.innerHTML=`<div class="pub-bar ${p?'on':''}">${icon(p?'check':'send')}<span>${p?`منشور لفصلك${p.by?' · '+esc(p.by):''}`:`${c.t()}: لم يُنشر لفصلك بعد`}</span><button class="btn sm ${p?'ghost':'gold'}" onclick="ambPub('${c.k()}',${!p},this)">${p?'إيقاف النشر':'انشريه لفصلك'}</button></div>`}
+    else if(p){el.style.display='';lk.innerHTML=''}
+    else{el.style.display='none';lk.innerHTML=`<div class="panel ch-locked">${icon('lock')}<div><b>${c.t()}</b><p class="hint">يظهر لك هنا عندما تنشره معلمتك أو سفيرة فصلك.</p></div></div>`}
+  });
+}
+async function ambPub(k,on,btn){btn.disabled=true;try{await API.ambPublish(ME.token,k,on)}catch(e){btn.disabled=false;toast(ERR[e.code]||'تعذّرت العملية');return}
+  await refreshAll();toast(on?'نُشر التحدي لفصلك':'أُوقف نشر التحدي')}
+/* للمعلمة: نشر التحديات لفصولها */
+function myClasses(){const m=myScope();return clsList().filter(c=>!m||m.has(c))}
+function renderPubPanel(){const box=$('pubPanel');if(!box)return;
+  const cls=myClasses(),sel=$('pubCls'),cur=sel.value;sel.innerHTML=cls.map(c=>`<option>${esc(c)}</option>`).join('');sel.value=cls.includes(cur)?cur:(cls[0]||'');
+  const c=sel.value,P=DB.pubs||[];
+  $('pubList').innerHTML=CHS.filter(x=>x.on()).map(x=>{const k=x.k(),p=P.find(q=>q.cls===c&&q.ch===k),n=cls.filter(cc=>P.some(q=>q.cls===cc&&q.ch===k)).length;
+    return `<div class="pub-row"><div style="flex:1;min-width:160px"><b>${x.t()}</b><p class="hint">${p?`منشور لهذا الفصل · ${p.role==='amb'?'السفيرة':'المعلمة'} ${esc(p.by||'')}`:'غير منشور لهذا الفصل'}<br>منشور في ${ar(n)} من ${ar(cls.length)} فصلًا</p></div>
+      <button class="btn sm ${p?'ghost':''}" onclick="tPub('${k}',${!p},false,this)">${p?'إيقاف لهذا الفصل':'نشر لهذا الفصل'}</button><button class="btn sm alt" onclick="tPub('${k}',true,true,this)">نشر لكل فصولي</button></div>`}).join('');
+  const amb=vis(DB.students).filter(s=>s.is_amb&&s.cls===c);
+  $('pubAmb').innerHTML=amb.length?`سفيرات ${esc(c)}: ${amb.map(s=>esc(s.name)).join('، ')}`:`لم تُعيَّن سفيرات لـ${esc(c)} بعد. عيّنيهن من تبويب «السفيرات».`;
+}
+async function tPub(k,on,all,btn){const cls=all?myClasses():[$('pubCls').value];if(all&&!confirm(`نشر التحدي لـ${ar(cls.length)} فصل؟`))return;btn.disabled=true;
+  try{for(const c of cls)await API.tChPublish(c,k,on)}catch(e){btn.disabled=false;toast(ERR[e.code]||'تعذّرت العملية');return}
+  await refreshAll();toast(on?'نُشر التحدي':'أُوقف النشر')}
+async function setAmb(id,on){const s=DB.students.find(x=>x.id===id);
+  if(on){const n=DB.students.filter(x=>x.is_amb&&x.cls===s.cls).length;if(n>=2&&!confirm(`في ${s.cls} ${ar(n)} سفيرات. تعيين سفيرة إضافية؟`))return}
+  try{await API.tSetAmb(id,on)}catch(e){toast(ERR[e.code]||'تعذّرت العملية');return}await refreshAll();toast(on?'عُيّنت سفيرة':'أُلغي التعيين')}
 function renderAmb(){
-  const i=(DB.term||1)-1,cv=cfgV().terms[i],list=DB.amb||[];
-  $('ambSub').innerHTML=`طالبات من كل فصل. لكل سفيرة رمز تدخل به على «تحدي الأسبوع»، والأوسمة تُحسب لكل فصل دراسي وحدها · <b>${TERMS[i][0]}: ${esc(cv.value)}</b>`;
-  const sel=$('ambCls'),cur=sel.value;sel.innerHTML=clsList().map(c=>`<option>${esc(c)}</option>`).join('');if(cur)sel.value=cur;
-  $('ambRoster').innerHTML=clsList().map(c=>{const l=list.filter(a=>a.cls===c);
-    return `<div class="amb-c"><h3>${esc(c)} <span class="hint">(${ar(l.length)})</span></h3>${l.length?l.map(a=>`<div class="amb"><div class="av">${esc(a.name[0]||'؟')}</div><div style="flex:1;font-weight:700">${esc(a.name)}</div><span class="badge" dir="ltr">${esc(a.code)}</span><button class="btn sm no" onclick="delAmb('${a.id}')">حذف</button></div>`).join(''):'<p class="hint">لا سفيرات بعد.</p>'}</div>`}).join('')}
-async function addAmb(){const names=$('ambNames').value.split('\n').map(x=>x.trim()).filter(x=>x.length>=2);if(!names.length)return toast('اكتبي اسمًا في كل سطر');
-  try{await API.ambAdd($('ambCls').value,names.join('\n'))}catch(e){if(e.code)toast(ERR[e.code]||'تعذّرت الإضافة');return}
-  $('ambNames').value='';await refreshAll();toast('أُضيفت السفيرات')}
-async function delAmb(id){if(!confirm('حذف السفيرة؟'))return;try{await API.ambDel(id)}catch(e){if(e.code)toast(ERR[e.code]||'تعذّر الحذف');return}await refreshAll();toast('تم الحذف')}
-function printAmbCards(){const l=DB.amb||[];if(!l.length)return toast('أضيفي سفيرات أولًا');const T=TERMS[(DB.term||1)-1];
-  $('printRoot').innerHTML=`<div class="tcards">${l.map(a=>`<div class="tcard"><div class="tc-h"><img src="${LOGO}" alt=""><div><small>${esc(cfgV().terms[(DB.term||1)-1].init)}</small><b>${esc(a.name)}</b></div></div>
-    <div class="tc-b"><div><small>رمز السفيرة</small><div class="tc-code" dir="ltr">${esc(a.code)}</div><small>${esc(a.cls)} · ${T[0]}</small></div></div></div>`).join('')}</div>`;
-  setPage('A4 portrait;margin:10mm');setTimeout(()=>window.print(),300)}
+  const i=(DB.term||1)-1;
+  $('ambSub').innerHTML=`السفيرة طالبة مسجّلة تعيّنينها من القائمة تحت بزر «تعيين سفيرة» (سفيرتان لكل فصل). ترى السفيرة كل التحديات، وتنشرها لزميلات فصلها · <b>${TERMS[i][0]}</b>`;
+  const cls=myClasses().filter(c=>vis(DB.students).some(s=>s.cls===c)||vis(DB.students).length===0);
+  $('ambRoster').innerHTML=`<div class="panel"><h2>سفيرات الفصول</h2>${cls.length?`<div class="amb-grid">${cls.map(c=>{const l=vis(DB.students).filter(s=>s.is_amb&&s.cls===c);
+    return `<div class="amb-cell ${l.length===2?'ok':l.length>2?'over':''}"><b>${esc(c)} <span class="hint">(${ar(l.length)}/٢)</span></b><span>${l.length?l.map(s=>esc(s.name)).join('، '):'لم تُعيَّن'}</span></div>`}).join('')}</div>`:'<p class="hint">تظهر الفصول هنا بعد تسجيل الطالبات.</p>'}</div>`;
+}
+
 
 /* ===== تنزيل ===== */
 function dl(name,rows){
